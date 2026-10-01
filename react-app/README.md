@@ -1,32 +1,60 @@
-# React + TypeScript + Vite
+# M & M Constructions — 3D Interactive Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+<div align="center">
 
-Currently, two official plugins are available:
+### *"From Foundation to Finish. Crafting spaces built to last."*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-r186-black?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 
-## React Compiler
+</div>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🏗️ Overview
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+**M & M Constructions** is an interactive 3D web experience built with React, TypeScript, and Three.js. It presents a scroll-driven procedural building construction simulation paired with a modern architectural portfolio.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+---
+
+## ✨ Features
+
+- **Scroll-Driven 3D Construction Pipeline**: Real-time assembly of structure, facade, interior, and landscape synced to viewport scrolling.
+- **Dynamic Camera Spline System**: Smooth `CatmullRomCurve3` splines with section-aware focus, zoom, and orbit controls.
+- **Architectural Blueprint & Annotation Overlay**: Live projected 3D coordinates into 2D UI callouts.
+- **Interactive Portfolio & Services**: Real-time camera transitions and fullscreen project modal dialogs.
+- **Decoupled 60fps WebGL Pipeline**: Zero React re-rendering overhead for the active animation loop.
+- **Responsive Industrial Design**: Dark theme, fluid typography, magnetic cursor, and mobile touch support.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Run local development server
+npm run dev
+
+# 3. Build for production
+npm run build
+
+# 4. Preview production build
+npm run preview
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+---
+
+## ⚙️ Content Configuration
+
+All copy, services, projects, principles, and contact details can be configured in:
+👉 [`src/data/content.ts`](src/data/content.ts)
+
+---
+
+## 📄 License & Ownership
+
+© **M & M Constructions**. All rights reserved.
