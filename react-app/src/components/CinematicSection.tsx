@@ -10,9 +10,15 @@ interface CinematicSectionProps {
   onBufferProgress: (percent: number) => void;
 }
 
+const FRAME_BASE_URL =
+  (import.meta.env.VITE_FRAME_BASE_URL as string) ||
+  SITE_CONTENT.cinematic.frameBaseUrl ||
+  '/frames';
+
 const CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
-  framePath: (index: number) => `/frames/frame-${String(index).padStart(4, '0')}.jpg`,
+  framePath: (index: number) =>
+    `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
   maxCacheSize: 140,
   concurrencyLimit: 8,
   keyframeStep: 16,

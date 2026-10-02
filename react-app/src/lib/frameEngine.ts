@@ -203,6 +203,18 @@ export class FrameCacheManager {
 
   public preloadInitialSequence(callback: () => void): void {
     this.onInitialReady = callback;
+
+    // Safety fallback: If initial buffering takes longer than 3.5s (e.g. 404/network stall),
+    // gracefully dismiss preloader so the site is never stuck on a locked screen.
+    setTimeout(() => {
+      if (this.onInitialReady) {
+        console.warn('[M&M Engine] Initial buffer timeout. Releasing preloader.');
+        if (this.onBufferProgress) this.onBufferProgress(100);
+        this.onInitialReady();
+        this.onInitialReady = null;
+      }
+    }, 3500);
+
     this.loadFrame(1);
     for (let i = 2; i <= this.initialBufferTarget; i++) {
       this.queue.push(i);

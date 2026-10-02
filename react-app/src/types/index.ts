@@ -24,6 +24,7 @@ export interface CinematicConfig {
   fps: number;
   resolution: string;
   aspectRatio: number;
+  frameBaseUrl?: string;
   stages: CinematicStage[];
 }
 

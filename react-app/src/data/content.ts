@@ -17,6 +17,7 @@ export const SITE_CONTENT: SiteContent = {
     fps: 24,
     resolution: '2560 × 1440',
     aspectRatio: 16 / 9,
+    frameBaseUrl: '/frames',
     stages: [
       {
         id: 'stage-01',
