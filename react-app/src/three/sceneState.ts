@@ -5,28 +5,40 @@
  */
 
 export interface SceneState {
+  // Build progress (0-1) during pin section
   pe: number;
+  // Blueprint mode blend
   bp: number;
+  // Radius multiplier
   rm: number;
+  // Interior mode blend
   inK: number;
+  // Y-scale for building group
   gy: number;
+  // Active service index
   svc: number;
+  // Hover state for projects
   hov: number;
+  // Overlay open state
   open: boolean;
+  // Mouse position normalized
   mx: number;
   my: number;
+  // Smoothed cursor
   cx: number;
   cy: number;
+  // Last stage index
   lastIdx: number;
+  // Current time from rAF
   time: number;
+  // Scroll progress in pin
   p: number;
+  // Post-pin scroll progress
   q: number;
+  // Whether we're in the pin section
   inPin: boolean;
+  // Current stage index
   stageIdx: number;
-  modelLoaded: boolean;
-  explodedBlend: number;
-  targetExploded: number;
-  lp: number;
 }
 
 export function createInitialState(): SceneState {
@@ -49,11 +61,8 @@ export function createInitialState(): SceneState {
     q: 0,
     inPin: true,
     stageIdx: 0,
-    modelLoaded: false,
-    explodedBlend: 0,
-    targetExploded: 0,
-    lp: 0.5,
   };
 }
 
+// Singleton state shared between Three.js and React
 export const sceneState = createInitialState();

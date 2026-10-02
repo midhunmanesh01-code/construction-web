@@ -45,16 +45,12 @@ export interface SiteContent {
 
 export const content: SiteContent = {
   stages: [
-    { threshold: 0, text: 'The site awaits.', label: 'SITE' },
-    { threshold: 0.10, text: 'Grounded in precision.', label: 'FOUNDATION' },
-    { threshold: 0.20, text: 'Rising with purpose.', label: 'STRUCTURE' },
-    { threshold: 0.35, text: 'Shaping the space.', label: 'FLOORS & WALLS' },
-    { threshold: 0.50, text: 'Defining the form.', label: 'ROOF' },
-    { threshold: 0.60, text: 'Enclosing the vision.', label: 'ENVELOPE' },
-    { threshold: 0.70, text: 'Character in detail.', label: 'FACADE' },
-    { threshold: 0.78, text: 'Warmth within.', label: 'INTERIOR' },
-    { threshold: 0.86, text: 'Nature completes.', label: 'LANDSCAPE' },
-    { threshold: 0.94, text: 'Built to last.', label: 'COMPLETE' },
+    { threshold: 0, text: 'Every space starts with an idea.', label: 'SITE' },
+    { threshold: 0.15, text: 'Planned with purpose.', label: 'FOUNDATION' },
+    { threshold: 0.3, text: 'Built on precision.', label: 'STRUCTURE' },
+    { threshold: 0.45, text: 'Crafted with care.', label: 'CRAFT' },
+    { threshold: 0.6, text: 'Finished with detail.', label: 'DETAIL' },
+    { threshold: 0.8, text: 'Built to last.', label: 'FINISH' },
   ],
   about: [
     "[Company story: add M & M Constructions' founding story here.]",

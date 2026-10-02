@@ -6,8 +6,8 @@ import * as THREE from 'three';
 
 // --- Utilities ---
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-const STAGE_LABELS = ['SITE', 'FOUNDATION', 'STRUCTURE', 'FLOORS & WALLS', 'ROOF', 'ENVELOPE', 'FACADE', 'INTERIOR', 'LANDSCAPE', 'COMPLETE'];
-const ANNOTATION_LABELS = ['FOUNDATION', 'STRUCTURE', 'ENVELOPE', 'INTERIOR', 'LANDSCAPE'];
+const STAGE_LABELS = ['SITE', 'FOUNDATION', 'STRUCTURE', 'ENVELOPE', 'INTERIORS', 'COMPLETE'];
+const ANNOTATION_LABELS = ['STRUCTURE', 'MATERIAL', 'DIMENSIONS', 'DETAIL', 'EXECUTION'];
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +30,6 @@ export default function App() {
   const serviceRowRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const projectRowRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const magRefs = useRef<(HTMLElement | null)[]>([]);
-  const loadRef = useRef<HTMLDivElement>(null);
 
   const [overlayContent, setOverlayContent] = useState<{
     n: string; loc: string; type: string; d: string; scope: string[]; det: string;
@@ -95,7 +94,7 @@ export default function App() {
         if (r.top < vh * 0.5 && r.bottom > vh * 0.5) cur = s;
       }
 
-      let tb = 0, tr = 1, ti = 0, pT = 1, lp = 0.5;
+      let tb = 0, tr = 1, ti = 0, pT = 1, lp = 0.5, tg = 1;
 
       if (sy < pinR + vh * 0.3 && q < 0.02) {
         pT = p;
@@ -106,9 +105,6 @@ export default function App() {
         return clamp((innerHeight - r.top) / (r.height + innerHeight));
       };
 
-      // Reset exploded view target each frame
-      st.targetExploded = 0;
-
       if (cur) {
         tb = +(cur.dataset.bp || '0');
         tr = +(cur.dataset.rm || '1');
@@ -118,11 +114,10 @@ export default function App() {
         if (cur.id === 'process') {
           pT = clamp((lp - 0.25) / 0.5);
           tb = 1 - pT * 0.9;
-          // Trigger exploded view in the middle of the process section
-          st.targetExploded = clamp((lp - 0.2) / 0.3) * (1 - clamp((lp - 0.7) / 0.2));
         }
         if (cur.id === 'services') {
           tb = [0, 0, 0.55, 0, 1][st.svc];
+          tg = [0.8, 1.55, 1, 1, 1][st.svc];
           if (st.svc === 3) {
             ti = 1;
             lp = 0.5 + Math.sin(st.time * 3e-4) * 0.3;
@@ -138,7 +133,8 @@ export default function App() {
       st.bp += (tb - st.bp) * 0.06;
       st.rm += (tr - st.rm) * 0.04;
       st.inK += (ti - st.inK) * 0.04;
-      st.lp = lp;
+      st.gy += (tg - st.gy) * 0.06;
+      (st as any)._lp = lp;
 
       // Stage index
       let idx = 0;
@@ -176,11 +172,6 @@ export default function App() {
       if (hbRef.current) hbRef.current.style.width = st.pe * 100 + '%';
       if (hudRef.current) hudRef.current.style.opacity = sy < pinR ? '1' : '0';
 
-      // Loading indicator
-      if (loadRef.current) {
-        loadRef.current.style.opacity = st.modelLoaded ? '0' : '1';
-      }
-
       // Annotations — project 3D positions to 2D
       if (engine) {
         const cam = engine.getCamera();
@@ -197,7 +188,7 @@ export default function App() {
       // Process steps
       if (cur && cur.id === 'process') {
         stepRefs.current.forEach((e, i) => {
-          if (e) e.classList.toggle('on', st.pe >= (i + 0.5) / 10 - 0.05);
+          if (e) e.classList.toggle('on', st.pe >= (i + 0.5) / 6 - 0.05);
         });
       }
     }
@@ -316,13 +307,6 @@ export default function App() {
 
       {/* Canvas */}
       <canvas id="c" ref={canvasRef} />
-
-      {/* Model loading indicator */}
-      <div id="loadmsg" ref={loadRef}>
-        <span>ARCHITECTURAL MODEL</span>
-        <span className="ac">AWAITING GLB ASSET</span>
-        <span className="sub">Place mm-signature-house.glb in /public/models/</span>
-      </div>
 
       {/* Main app content */}
       <div id="app">
