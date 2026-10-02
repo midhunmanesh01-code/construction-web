@@ -104,7 +104,7 @@ const STAGE_DEFINITIONS: StageDef[] = [
   },
   {
     name: 'STRUCTURE',
-    label: 'STRUCTURAL FRAME',
+    label: 'COLUMNS & BEAMS',
     start: 0.2,
     end: 0.35,
     entries: [
@@ -112,23 +112,27 @@ const STAGE_DEFINITIONS: StageDef[] = [
       { path: 'Structure.Columns', start: 0.2, end: 0.28, animation: 'riseY', offsetX: 0, offsetY: -6, offsetZ: 0 },
       { path: 'Structure.Beams', start: 0.25, end: 0.32, animation: 'slideX', offsetX: -8, offsetY: 0, offsetZ: 0 },
       { path: 'Structure.Slabs', start: 0.28, end: 0.35, animation: 'settle', offsetX: 0, offsetY: 2, offsetZ: 0 },
+      { path: 'Structure.StructuralSlabs', start: 0.28, end: 0.35, animation: 'settle', offsetX: 0, offsetY: 2, offsetZ: 0 },
     ],
   },
   {
     name: 'FLOORS_WALLS',
-    label: 'FLOORS & WALLS',
+    label: 'FLOOR SLABS',
     start: 0.35,
     end: 0.5,
     entries: [
       { path: 'Architecture.Floors', start: 0.35, end: 0.42, animation: 'settle', offsetX: 0, offsetY: 1.5, offsetZ: 0 },
+      { path: 'Architecture.GroundFloor', start: 0.35, end: 0.42, animation: 'settle', offsetX: 0, offsetY: 1.5, offsetZ: 0 },
+      { path: 'Architecture.UpperFloor', start: 0.37, end: 0.44, animation: 'settle', offsetX: 0, offsetY: 2.0, offsetZ: 0 },
       { path: 'Architecture.Walls', start: 0.38, end: 0.46, animation: 'riseY', offsetX: 0, offsetY: -4, offsetZ: 0 },
       { path: 'Architecture.Partitions', start: 0.4, end: 0.47, animation: 'riseY', offsetX: 0, offsetY: -3, offsetZ: 0 },
       { path: 'Architecture.Stairs', start: 0.42, end: 0.5, animation: 'cascadeY', offsetX: 0, offsetY: -1, offsetZ: 0 },
+      { path: 'Architecture.Staircase', start: 0.42, end: 0.5, animation: 'cascadeY', offsetX: 0, offsetY: -1, offsetZ: 0 },
     ],
   },
   {
     name: 'ROOF',
-    label: 'ROOF & TERRACES',
+    label: 'ROOF & FACADE',
     start: 0.5,
     end: 0.6,
     entries: [
@@ -138,7 +142,7 @@ const STAGE_DEFINITIONS: StageDef[] = [
   },
   {
     name: 'ENVELOPE',
-    label: 'ENVELOPE',
+    label: 'WINDOWS & DOORS',
     start: 0.6,
     end: 0.7,
     entries: [
@@ -164,7 +168,7 @@ const STAGE_DEFINITIONS: StageDef[] = [
   },
   {
     name: 'INTERIOR',
-    label: 'INTERIOR',
+    label: 'INTERIOR & FURNITURE',
     start: 0.78,
     end: 0.86,
     entries: [
@@ -173,6 +177,7 @@ const STAGE_DEFINITIONS: StageDef[] = [
       { path: 'Interior.Kitchen', start: 0.79, end: 0.84, animation: 'grow', offsetX: 0, offsetY: 0, offsetZ: 0 },
       { path: 'Interior.LivingRoom', start: 0.8, end: 0.85, animation: 'grow', offsetX: 0, offsetY: 0, offsetZ: 0 },
       { path: 'Interior.Bedroom', start: 0.8, end: 0.85, animation: 'grow', offsetX: 0, offsetY: 0, offsetZ: 0 },
+      { path: 'Interior.InteriorLighting', start: 0.82, end: 0.86, animation: 'fadeIn', offsetX: 0, offsetY: 0, offsetZ: 0 },
       { path: 'Interior.Lighting', start: 0.82, end: 0.86, animation: 'fadeIn', offsetX: 0, offsetY: 0, offsetZ: 0 },
     ],
   },

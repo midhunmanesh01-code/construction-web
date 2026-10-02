@@ -12,6 +12,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 /** All expected named groups in the GLB model hierarchy */
 export const GROUP_PATHS = [
+  'House',
   'Site',
   'Foundation',
   'Foundation.Footings',
@@ -20,12 +21,16 @@ export const GROUP_PATHS = [
   'Structure',
   'Structure.Columns',
   'Structure.Beams',
+  'Structure.StructuralSlabs',
   'Structure.Slabs',
   'Architecture',
+  'Architecture.GroundFloor',
+  'Architecture.UpperFloor',
   'Architecture.Walls',
   'Architecture.Partitions',
   'Architecture.Floors',
   'Architecture.Stairs',
+  'Architecture.Staircase',
   'Architecture.Balcony',
   'Architecture.Roof',
   'Envelope',
@@ -43,6 +48,7 @@ export const GROUP_PATHS = [
   'Interior.Kitchen',
   'Interior.LivingRoom',
   'Interior.Bedroom',
+  'Interior.InteriorLighting',
   'Interior.Lighting',
   'Landscape',
   'Landscape.Trees',
@@ -53,6 +59,7 @@ export const GROUP_PATHS = [
 ] as const;
 
 export type GroupPath = (typeof GROUP_PATHS)[number];
+
 
 /** Stores original transform for reset / animation base */
 export interface OriginalTransform {

@@ -524,6 +524,180 @@ header#main-nav {
   color: var(--w);
 }
 
+/* --- Construction Sequence Ribbon Navigation (from reference image) --- */
+.construction-sequence-nav {
+  position: absolute;
+  left: 4vw;
+  right: 4vw;
+  bottom: calc(6vh + 260px);
+  z-index: 15;
+  background: var(--bg-board);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: 2px;
+  pointer-events: auto;
+  transition: opacity 0.6s ease;
+}
+
+@media (max-width: 1100px) {
+  .construction-sequence-nav {
+    display: none;
+  }
+}
+
+.sequence-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sequence-title {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.sequence-stage-status {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--ac);
+  font-weight: 600;
+}
+
+.sequence-steps-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sequence-steps-list::-webkit-scrollbar {
+  display: none;
+}
+
+.sequence-step-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.sequence-step-btn:hover {
+  color: var(--w);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sequence-step-btn.completed {
+  color: var(--text-dim);
+}
+
+.sequence-step-btn.completed .step-num {
+  color: var(--wood);
+}
+
+.sequence-step-btn.active {
+  color: var(--ac);
+  background: rgba(223, 155, 82, 0.15);
+  border-color: var(--border-amber);
+  font-weight: 600;
+}
+
+.sequence-step-btn.active .step-num {
+  color: var(--ac);
+}
+
+.step-num {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.step-chevron {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-left: 2px;
+  opacity: 0.5;
+}
+
+/* --- Active Space Inspection Banner --- */
+.active-space-banner {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: auto;
+  animation: bannerSlideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes bannerSlideDown {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.space-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(18, 20, 26, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--ac);
+  padding: 8px 18px;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px var(--ac-glow);
+}
+
+.space-banner-tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--ac);
+  font-weight: 600;
+}
+
+.space-banner-name {
+  font-family: var(--b);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--w);
+}
+
+.space-banner-close {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--bg);
+  background: var(--ac);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.space-banner-close:hover {
+  background: var(--w);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
 /* Timeline Scrubber Bar */
 #construction-scrubber {
   position: absolute;

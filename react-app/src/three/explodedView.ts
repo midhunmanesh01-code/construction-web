@@ -17,19 +17,22 @@ import type { HouseModel } from './modelLoader';
  * their parent so we don't need per-child entries.
  */
 const EXPLODE_MAP: [string, number][] = [
-  ['Landscape', -5],
-  ['Site', -3],
-  ['Foundation', -1.5],
+  ['Landscape', -4.5],
+  ['Site', -4.5],
+  ['Foundation', -2.2],
   ['Structure', 0],
-  ['Architecture.Floors', 0.5],
-  ['Architecture.Walls', 2],
-  ['Architecture.Partitions', 2],
-  ['Architecture.Stairs', 1.5],
-  ['Architecture.Balcony', 5],
-  ['Architecture.Roof', 7],
-  ['Envelope', 4],
-  ['Facade', 4],
-  ['Interior', 1],
+  ['Architecture.Floors', 0.9],
+  ['Architecture.GroundFloor', 0.9],
+  ['Architecture.UpperFloor', 1.4],
+  ['Interior', 1.8],
+  ['Architecture.Walls', 2.4],
+  ['Architecture.Partitions', 2.4],
+  ['Architecture.Stairs', 2.0],
+  ['Architecture.Staircase', 2.0],
+  ['Envelope', 3.8],
+  ['Facade', 4.8],
+  ['Architecture.Balcony', 5.2],
+  ['Architecture.Roof', 6.8],
 ];
 
 interface ExplodableEntry {

@@ -244,6 +244,15 @@ export default function App() {
     window.open(whatsappUrl, '_blank');
   };
 
+  // Jump directly to specific construction stage
+  const handleJumpToStage = (stageIdx: number) => {
+    if (pinRef.current) {
+      const stage = content.stages[stageIdx];
+      const pinHeight = pinRef.current.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: stage.threshold * pinHeight + 10, behavior: 'smooth' });
+    }
+  };
+
   const currentStage = content.stages[currentStageIdx] || content.stages[0];
 
   return (
@@ -315,6 +324,24 @@ export default function App() {
           </a>
         </div>
       </header>
+
+      {/* Active Space Inspection Banner */}
+      {activeSpaceId && (
+        <div className="active-space-banner">
+          <div className="space-banner-content">
+            <span className="space-banner-tag">● INSPECTING ARCHITECTURAL VOLUME</span>
+            <span className="space-banner-name">
+              {content.spaces.find((s) => s.id === activeSpaceId)?.name} — {content.spaces.find((s) => s.id === activeSpaceId)?.subtitle}
+            </span>
+            <button
+              className="space-banner-close"
+              onClick={() => handleInspectSpace({ id: activeSpaceId } as any)}
+            >
+              ✕ EXIT INSPECTION
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Technical Telemetry HUD Overlay */}
       <div id="telemetry-hud">
@@ -395,6 +422,32 @@ export default function App() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Construction Sequence Ribbon Bar (from reference image) */}
+            <div className="construction-sequence-nav">
+              <div className="sequence-nav-header">
+                <span className="sequence-title">CONSTRUCTION SEQUENCE (SCROLL EXPERIENCE)</span>
+                <span className="sequence-stage-status">STAGE {currentStageIdx + 1} OF 10</span>
+              </div>
+              <div className="sequence-steps-list">
+                {content.stages.map((stg, sIdx) => {
+                  const isPassed = sIdx < currentStageIdx;
+                  const isCurrent = sIdx === currentStageIdx;
+                  return (
+                    <button
+                      key={stg.id}
+                      className={`sequence-step-btn ${isCurrent ? 'active' : isPassed ? 'completed' : ''}`}
+                      onClick={() => handleJumpToStage(sIdx)}
+                      title={`Jump to ${stg.num}. ${stg.label}`}
+                    >
+                      <span className="step-num">{stg.num}.</span>
+                      <span className="step-label">{stg.label}</span>
+                      {sIdx < content.stages.length - 1 && <span className="step-chevron">›</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

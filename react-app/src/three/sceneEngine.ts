@@ -219,6 +219,36 @@ export function createScene(canvas: HTMLCanvasElement): SceneEngine {
   );
   S.add(dustPoints);
 
+  // --- Exploded Architectural Technical Leader Lines ---
+  const leaderGroup = new THREE.Group();
+  leaderGroup.visible = false;
+  S.add(leaderGroup);
+
+  const leaderMat = new THREE.LineDashedMaterial({
+    color: 0xdf9b52,
+    transparent: true,
+    opacity: 0.6,
+    dashSize: 0.35,
+    gapSize: 0.2,
+  });
+
+  const leaderCornerPositions: [number, number][] = [
+    [-9.5, -6.5],
+    [-9.5, 6.5],
+    [9.5, -6.5],
+    [9.5, 6.5],
+    [-3.5, 7.5],
+    [6.5, 7.5],
+  ];
+
+  leaderCornerPositions.forEach(([lx, lz]) => {
+    const pts = [new THREE.Vector3(lx, -4.5, lz), new THREE.Vector3(lx, 8.5, lz)];
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    const line = new THREE.LineSegments(geo, leaderMat);
+    line.computeLineDistances();
+    leaderGroup.add(line);
+  });
+
   // --- Animation loop ---
   let animId: number;
   let disposed = false;
@@ -239,9 +269,17 @@ export function createScene(canvas: HTMLCanvasElement): SceneEngine {
     }
 
     // ----- Exploded view update -----
+    st.explodedBlend += (st.targetExploded - st.explodedBlend) * 0.08;
     if (explodedViewCtrl) {
-      st.explodedBlend += (st.targetExploded - st.explodedBlend) * 0.05;
       explodedViewCtrl.update(st.explodedBlend);
+    }
+
+    // ----- Exploded leader lines visibility & opacity -----
+    if (st.explodedBlend > 0.01) {
+      leaderGroup.visible = true;
+      leaderMat.opacity = Math.min(0.65, st.explodedBlend * 0.7);
+    } else {
+      leaderGroup.visible = false;
     }
 
     // ----- Blueprint mode -----
@@ -263,7 +301,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneEngine {
 
     // ----- Placeholder animation (progressive reveal + exploded view) -----
     if (placeholder) {
-      placeholder.update(t, st.pe, st.targetExploded);
+      placeholder.update(t, st.pe, st.explodedBlend);
     }
 
     // ----- Camera director update -----
