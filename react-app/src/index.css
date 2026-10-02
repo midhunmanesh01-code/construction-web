@@ -43,3 +43,7 @@ footer{position:relative;z-index:3;padding:4vh 5vw;font-size:12px;letter-spacing
 #cur{position:fixed;z-index:60;left:0;top:0;width:34px;height:34px;margin:-17px;border:1px solid var(--ac);border-radius:50%;pointer-events:none;transition:width .3s,height .3s,margin .3s,background .3s}#cur.h{width:70px;height:70px;margin:-35px;background:rgba(201,132,60,.15)}
 @media(pointer:coarse){#cur{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}}
+
+#loadmsg{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:700 clamp(14px,2vw,18px)/1.4 var(--d);letter-spacing:.3em;color:var(--st);transition:opacity 1.2s;pointer-events:none}
+#loadmsg .ac{color:var(--ac);font-size:clamp(12px,1.6vw,16px)}
+#loadmsg .sub{font:300 11px/1.4 var(--b);letter-spacing:.15em;margin-top:8px;opacity:.5}
