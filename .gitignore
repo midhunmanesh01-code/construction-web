@@ -28,5 +28,6 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
 frames/
+**/frames/
+MM-Constructions-New/frames/
