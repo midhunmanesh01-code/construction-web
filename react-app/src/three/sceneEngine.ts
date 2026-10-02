@@ -2,11 +2,13 @@
  * Three.js scene engine — the core render loop for M&M Constructions.
  *
  * Responsibilities:
- *   1. WebGL Renderer, Scene, Perspective Camera, Atmospheric Fog, Ground Plane, Dust Particles
+ *   1. WebGL Renderer, Scene, Camera, Atmospheric Fog, Ground Plane, Dust Particles
  *   2. Load the signature house GLB via modelLoader
  *   3. Drive 10-stage physical construction sequence, exploded view, multi-angle camera, multi-mode lighting
  *   4. Technical blueprint / wireframe overlay with edge geometries
  *   5. Architectural wireframe schematic placeholder when GLB is absent
+ *
+ * Zero procedural boxes/crane. Fully modular and GLB-ready.
  */
 import * as THREE from 'three';
 import { sceneState, type ViewMode, type LightingMode } from './sceneState';
@@ -129,7 +131,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneEngine {
 
   // --- 3D Annotation Anchors (Key architectural systems) ---
   const annotationPositions = [
-    new THREE.Vector3(0, 0.4, 7.5),    // 01. FOUNDATION & PLINTH
+    new THREE.Vector3(0, 0.4, 7.5),     // 01. FOUNDATION & PLINTH
     new THREE.Vector3(-7.5, 3.8, 5.5),  // 02. STRUCTURAL COLUMNS & CANTILEVER
     new THREE.Vector3(-2.0, 7.4, 5.8),  // 03. FLOATING ROOF SLAB & LOUVERS
     new THREE.Vector3(0.0, 2.6, 2.0),   // 04. DOUBLE-HEIGHT LIVING ATRIUM
@@ -259,9 +261,9 @@ export function createScene(canvas: HTMLCanvasElement): SceneEngine {
       }
     }
 
-    // ----- Placeholder animation -----
+    // ----- Placeholder animation (progressive reveal + exploded view) -----
     if (placeholder) {
-      placeholder.update(t, st.pe);
+      placeholder.update(t, st.pe, st.targetExploded);
     }
 
     // ----- Camera director update -----

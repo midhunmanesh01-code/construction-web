@@ -102,6 +102,14 @@ export default function App() {
 
       if (cursorRef.current) {
         cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        
+        // Detect hover on clickable elements
+        const target = e.target as HTMLElement | null;
+        if (target && (target.closest('button') || target.closest('a') || target.closest('.space-card') || target.closest('.project-plate-card') || target.closest('.service-row-item') || target.closest('input') || target.closest('select') || target.closest('textarea'))) {
+          cursorRef.current.classList.add('hover');
+        } else {
+          cursorRef.current.classList.remove('hover');
+        }
       }
     };
 
@@ -112,6 +120,7 @@ export default function App() {
   // 60fps UI Loop for Scroll Tracking, 3D Annotations & HUD
   useEffect(() => {
     let animId: number;
+    let lastScrollY = window.scrollY;
     const tmpVec = new THREE.Vector3();
 
     const updateLoop = () => {
@@ -120,6 +129,13 @@ export default function App() {
       const st = sceneState;
       const sy = window.scrollY;
       const vh = window.innerHeight;
+
+      // When user actively scrolls, return camera to scroll trajectory
+      if (Math.abs(sy - lastScrollY) > 8 && st.viewMode !== 'scroll' && !activeSpaceId) {
+        st.viewMode = 'scroll';
+        setActiveAngle('');
+      }
+      lastScrollY = sy;
 
       // Calculate pin scroll progress
       let p = 0;
@@ -139,12 +155,8 @@ export default function App() {
       st.p = p;
       st.q = q;
 
-      // When not in custom view mode, follow scroll progress
-      if (st.viewMode === 'scroll') {
-        st.pe += (p - st.pe) * 0.08;
-      } else {
-        st.pe += (p - st.pe) * 0.05;
-      }
+      // Follow scroll progress
+      st.pe += (p - st.pe) * 0.08;
 
       // Determine current construction stage index
       let stageIdx = 0;
@@ -202,7 +214,6 @@ export default function App() {
           if (!el || !positions[i]) return;
           tmpVec.copy(positions[i]).applyMatrix4(G.matrixWorld).project(cam);
 
-          // Visible when in front of camera and during completed construction/blueprint mode
           const isVisible = tmpVec.z < 1 && inPinSection && st.pe > 0.25;
           el.style.opacity = isVisible ? '0.9' : '0';
           el.style.transform = `translate(${(tmpVec.x * 0.5 + 0.5) * window.innerWidth}px, ${(-tmpVec.y * 0.5 + 0.5) * window.innerHeight}px)`;
@@ -212,7 +223,7 @@ export default function App() {
 
     animId = requestAnimationFrame(updateLoop);
     return () => cancelAnimationFrame(animId);
-  }, [currentStageIdx]);
+  }, [currentStageIdx, activeSpaceId]);
 
   // Handle Scrubber Click
   const handleScrubberClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -339,7 +350,7 @@ export default function App() {
             01. PINNED SCROLL CONSTRUCTION SEQUENCE (1000vh)
             ================================================================= */}
         <section id="pin" ref={pinRef}>
-          <div className="fix-stage">
+          <div className="fix-stage" id="top">
             {/* Hero Architectural Editorial Overlay */}
             <div className="hero-editorial" id="hero" ref={heroRef}>
               <div className="hero-top-meta">

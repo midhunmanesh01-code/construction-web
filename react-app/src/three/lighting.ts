@@ -16,7 +16,7 @@ export interface SceneLighting {
   hemisphere: THREE.HemisphereLight;
   pointLights: THREE.PointLight[];
   landscapeLights: THREE.PointLight[];
-  update: (progress: number, mode: LightingMode) => void;
+  update: (progress: number, mode?: LightingMode) => void;
 }
 
 export function createLighting(scene: THREE.Scene): SceneLighting {
@@ -79,7 +79,7 @@ export function createLighting(scene: THREE.Scene): SceneLighting {
   });
 
   function update(progress: number, mode: LightingMode = 'dusk') {
-    // Stage-based intensity ramp (interior & exterior lights turn on as construction finishes)
+    // Stage-based intensity ramp
     const interiorRamp = Math.max(0, Math.min(1, (progress - 0.72) / 0.12));
     const smoothInterior = interiorRamp * interiorRamp * (3 - 2 * interiorRamp);
 

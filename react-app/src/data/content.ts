@@ -13,8 +13,8 @@ export interface ViewpointAngle {
   id: string;
   name: string;
   label: string;
-  azimuth: number; // degrees
-  elevation: number; // meters
+  azimuth: number;
+  elevation: number;
   fov: number;
   pos: [number, number, number];
   target: [number, number, number];
@@ -117,11 +117,11 @@ export const content: SiteContent = {
       label: 'SITE PREPARATION',
       sublabel: 'EARTHWORK & TOPOGRAPHY',
       tagline: 'Grounded in precision from the first boundary demarcation.',
-      description: 'Demarcation, topsoil stripping, geological core boring, and precise laser-guided excavation to establish subterranean bearing strata.',
+      description: 'Demarcation, topsoil stripping, geological core boring, and laser-guided excavation establishing subterranean bearing strata.',
       specs: [
         { label: 'Bearing Capacity', value: '280 kN/m²' },
         { label: 'Excavation Depth', value: '-2.40m BGL' },
-        { label: 'Survey Grid', value: '1.20m Laser Datum' },
+        { label: 'Survey Datum', value: '1.20m Laser Grid' },
       ],
     },
     {
@@ -131,11 +131,11 @@ export const content: SiteContent = {
       label: 'FOUNDATION',
       sublabel: 'FOOTINGS & SUBSTRUCTURE',
       tagline: 'Engineered subterranean bedrock integration.',
-      description: 'Reinforced cement concrete isolated footings, interconnected grade beams, and heavy-gauge damp-proof membrane with integral capillary barriers.',
+      description: 'Reinforced cement concrete isolated footings, interconnected grade tie beams, and heavy-gauge damp-proof membrane barriers.',
       specs: [
         { label: 'Concrete Grade', value: 'M35 High Performance' },
-        { label: 'Rebar Specification', value: 'Fe 550D TMT CRS' },
-        { label: 'Slab Thickness', value: '250mm Raft Base' },
+        { label: 'Rebar Spec', value: 'Fe 550D TMT CRS' },
+        { label: 'Slab Depth', value: '250mm Raft Base' },
       ],
     },
     {
@@ -145,7 +145,7 @@ export const content: SiteContent = {
       label: 'COLUMNS & BEAMS',
       sublabel: 'PRIMARY STRUCTURAL FRAME',
       tagline: 'Slender vertical RCC members and monolithic transfer spans.',
-      description: 'Cast-in-place reinforced concrete column grid and post-tensioned primary transfer beams calibrated for expansive column-free double-height spaces.',
+      description: 'Cast-in-place reinforced concrete column matrix and post-tensioned primary transfer beams calibrated for column-free double-height spaces.',
       specs: [
         { label: 'Column Section', value: '300 × 600mm RCC' },
         { label: 'Max Cantilever', value: '4.80m Unsupported' },
@@ -159,10 +159,10 @@ export const content: SiteContent = {
       label: 'FLOOR SLABS',
       sublabel: 'HORIZONTAL DIAPHRAGMS',
       tagline: 'Two-way post-tensioned horizontal slabs framing spatial volume.',
-      description: 'Monolithic floor diaphragms with recessed MEP conduit channels, integrated thermal insulation cores, and flush perimeter ceiling transitions.',
+      description: 'Monolithic floor diaphragms with recessed MEP conduit matrices, integral thermal cores, and flush perimeter ceiling transitions.',
       specs: [
         { label: 'Floor System', value: 'Post-Tensioned Flat Slab' },
-        { label: 'Floor-to-Ceiling', value: '3.60m Clear Height' },
+        { label: 'Clear Ceiling', value: '3.60m Clear Height' },
         { label: 'Deflection Index', value: 'L / 480 Controlled' },
       ],
     },
@@ -173,11 +173,11 @@ export const content: SiteContent = {
       label: 'WALLS & PARTITIONS',
       sublabel: 'INTERNAL SPATIAL ENVELOPE',
       tagline: 'Thermal masonry partitions and acoustic separation cores.',
-      description: 'Aerated autoclaved blockwork, acoustic sound-dampened partitions, double-height foyer shear walls, and feature cantilevered floating staircase.',
+      description: 'Aerated autoclaved blockwork, acoustic sound-dampened partitions, double-height shear walls, and feature cantilevered floating staircase.',
       specs: [
         { label: 'Acoustic Rating', value: 'Rw 52 dB Isolation' },
         { label: 'Thermal U-Value', value: '0.34 W/m²K' },
-        { label: 'Internal Finish', value: 'Honed Lime Plaster' },
+        { label: 'Internal Plaster', value: 'Honed Lime Micro-Finish' },
       ],
     },
     {
@@ -186,12 +186,12 @@ export const content: SiteContent = {
       threshold: 0.6,
       label: 'ROOF & FACADE',
       sublabel: 'CANTILEVERED CANOPY & STONE',
-      tagline: 'Dramatic floating roof planes and natural stone masonry cladding.',
-      description: 'Sculptural cantilevered concrete roof slabs, dark basalt stone feature pylons, insulated rooftop waterproofing deck, and stormwater collection channels.',
+      tagline: 'Dramatic floating roof planes and natural stone ashlar cladding.',
+      description: 'Sculptural cantilevered concrete roof slabs, dark basalt stone feature pylons, insulated rooftop waterproofing deck, and perimeter drainage.',
       specs: [
         { label: 'Roof Overhang', value: '3.20m Solar Shading' },
         { label: 'Cladding Stone', value: 'Charcoal Basalt Ashlar' },
-        { label: 'Waterproofing', value: 'Dual-Layer Elastomeric' },
+        { label: 'Waterproofing', value: 'Dual Elastomeric Membrane' },
       ],
     },
     {
@@ -201,9 +201,9 @@ export const content: SiteContent = {
       label: 'WINDOWS & DOORS',
       sublabel: 'THERMAL ENVELOPE & GLAZING',
       tagline: 'Floor-to-ceiling high-transmission acoustic thermal glazing.',
-      description: 'Thermally-broken anodized aluminum curtain wall assemblies, oversized pivot entrance portal, motorized sliding panels, and concealed subframe tracks.',
+      description: 'Thermally-broken matte black aluminum curtain wall assemblies, oversized pivot entrance portal, motorized sliding panels, and flush tracks.',
       specs: [
-        { label: 'Glazing Type', value: 'Low-E Double Laminated 28mm' },
+        { label: 'Glazing Assembly', value: 'Low-E Double Laminated 28mm' },
         { label: 'Visible Light', value: '68% High Transmission' },
         { label: 'Solar Heat Gain', value: 'SHGC 0.28 Climate-Tuned' },
       ],
@@ -218,7 +218,7 @@ export const content: SiteContent = {
       description: 'Vertical teak wood acoustic fins, natural Italian marble flooring, concealed cove LED lighting, custom kitchen island bar, and tailored spatial joinery.',
       specs: [
         { label: 'Timber Species', value: 'Sustainably Harvested Teak' },
-        { label: 'Color Temperature', value: '2700K Warm Architectural' },
+        { label: 'Color Temp', value: '2700K Warm Architectural' },
         { label: 'Flooring Surface', value: 'Honed Crema & Grey Basalt' },
       ],
     },
@@ -233,7 +233,7 @@ export const content: SiteContent = {
       specs: [
         { label: 'Plant Palette', value: 'Native Tropical & Specimen Palms' },
         { label: 'Driveway Surface', value: 'Honed Flamed Granite Pavers' },
-        { label: 'Exterior Lighting', value: 'IP67 Low-Glare Warm LED' },
+        { label: 'Exterior Fixtures', value: 'IP67 Low-Glare Warm LED' },
       ],
     },
     {
@@ -246,8 +246,8 @@ export const content: SiteContent = {
       description: 'The completed modern residence realized as a singular architectural statement uniting engineering rigor, natural materiality, and tropical luxury.',
       specs: [
         { label: 'Total Built Area', value: '6,850 Sq. Ft.' },
-        { label: 'Total Volume', value: '2,480 m³ Enclosed' },
-        { label: 'Execution Standard', value: 'Zero-Tolerance Turnkey' },
+        { label: 'Enclosed Volume', value: '2,480 m³ Volume' },
+        { label: 'Execution Spec', value: 'Zero-Tolerance Turnkey' },
       ],
     },
   ],
@@ -339,9 +339,9 @@ export const content: SiteContent = {
       subtitle: 'DOUBLE-HEIGHT ATRIUM',
       area: '840 Sq. Ft.',
       level: 'Ground Floor',
-      description: 'Soaring 7.2-meter double-height volume wrapped in seamless glass curtains, anchored by a sculptural steel-and-wood floating stair and illuminated by warm recessed architectural linear fixtures.',
+      description: 'Soaring 7.2-meter double-height volume wrapped in seamless glass curtains, anchored by a sculptural floating stair and illuminated by warm recessed architectural linear fixtures.',
       features: ['7.2m Clear Ceiling Height', 'Custom Italian Modular Sectional', 'Integrated Architectural Staircase', 'Concealed 2700K Linear Cove'],
-      cameraPos: [-2.5, 2.4, 4.2],
+      cameraPos: [-2.8, 2.4, 4.5],
       cameraTarget: [1.2, 2.8, -1.5],
     },
     {
@@ -361,9 +361,9 @@ export const content: SiteContent = {
       subtitle: 'PRIVATE HAVEN',
       area: '540 Sq. Ft.',
       level: 'Upper Floor',
-      description: 'Serene master suite featuring acoustic wood-ribbed feature headboard wall, wide-plank oak flooring, walk-in dressing wardrobe, and corner glass doors opening onto the private cantilevered terrace.',
+      description: 'Serene master suite featuring acoustic wood-ribbed headboard wall, wide-plank oak flooring, walk-in dressing wardrobe, and corner glass doors opening onto the private cantilevered terrace.',
       features: ['Acoustic Teak Slat Wall', 'Private Sunset Terrace Access', 'Concealed Walk-In Wardrobe', 'Motorized Thermal Blackout Drapes'],
-      cameraPos: [-3.8, 5.8, 2.2],
+      cameraPos: [-3.8, 5.8, 2.5],
       cameraTarget: [0.5, 5.6, -1.8],
     },
     {
@@ -374,7 +374,7 @@ export const content: SiteContent = {
       level: 'Upper Floor',
       description: 'Honed grey marble wet-room with freestanding stone composite soaking tub, rain-head ceiling shower, frameless fluted glass partitions, and floating twin quartz vanities with backlit mirrors.',
       features: ['Bookmatched Honed Marble', 'Freestanding Soaking Tub', 'Ceiling Rain Shower Matrix', 'Warm Backlit Vanity Mirrors'],
-      cameraPos: [3.2, 5.6, -1.5],
+      cameraPos: [3.2, 5.6, -1.2],
       cameraTarget: [0.0, 5.4, 1.2],
     },
     {
@@ -385,7 +385,7 @@ export const content: SiteContent = {
       level: 'Upper Floor',
       description: 'Deeply cantilevered outdoor lounge protected by the floating roof overhang, framed by perimeter planter parapets with tropical foliage, and finished in weathered composite teak decking.',
       features: ['4.8m Deep Cantilever Slab', 'Weatherproof Teak Decking', 'Integral Planter Parapets', 'Integrated Recessed Step Lighting'],
-      cameraPos: [-4.2, 6.2, 5.5],
+      cameraPos: [-4.5, 6.2, 5.8],
       cameraTarget: [1.0, 5.2, 0.5],
     },
     {
@@ -396,7 +396,7 @@ export const content: SiteContent = {
       level: 'Roof Level',
       description: 'High-albedo reflective roof surface engineered with discrete solar photovoltaic array zones, rainwater retention green roof zones, and concealed HVAC service shafts.',
       features: ['Concealed Parapet Gutters', 'Solar PV Integration Zone', 'Thermal Insulation Barrier', 'Lightwell Atrium Penetration'],
-      cameraPos: [0, 28, 6],
+      cameraPos: [0, 26, 8],
       cameraTarget: [0, 4, 0],
     },
   ],
