@@ -79,51 +79,61 @@ export function createLighting(scene: THREE.Scene): SceneLighting {
   });
 
   function update(progress: number, mode: LightingMode = 'dusk') {
-    // Stage-based intensity ramp
-    const interiorRamp = Math.max(0, Math.min(1, (progress - 0.72) / 0.12));
-    const smoothInterior = interiorRamp * interiorRamp * (3 - 2 * interiorRamp);
+    const isHero = progress <= 0.02;
+    const isComplete = progress >= 0.94;
 
-    const landscapeRamp = Math.max(0, Math.min(1, (progress - 0.84) / 0.1));
-    const smoothLandscape = landscapeRamp * landscapeRamp * (3 - 2 * landscapeRamp);
+    let smoothInterior = 0;
+    let smoothLandscape = 0;
+
+    if (isHero || isComplete) {
+      smoothInterior = 1.0;
+      smoothLandscape = 1.0;
+    } else {
+      const interiorRamp = Math.max(0, Math.min(1, (progress - 0.70) / 0.14));
+      smoothInterior = interiorRamp * interiorRamp * (3 - 2 * interiorRamp);
+
+      const landscapeRamp = Math.max(0, Math.min(1, (progress - 0.82) / 0.12));
+      smoothLandscape = landscapeRamp * landscapeRamp * (3 - 2 * landscapeRamp);
+    }
 
     switch (mode) {
       case 'dusk':
         // Signature warm hero dusk
         sun.color.setHex(0xffcb8f);
-        sun.intensity = 1.3 + progress * 0.5;
+        sun.intensity = isHero ? 2.4 : (1.6 + progress * 0.8);
         sun.position.set(-22, 22, 18);
         rim.color.setHex(0x5c7a9e);
-        rim.intensity = 0.8;
-        hemisphere.color.setHex(0x8fa3bf);
-        hemisphere.groundColor.setHex(0x28231c);
-        hemisphere.intensity = 0.65;
+        rim.intensity = 0.9;
+        hemisphere.color.setHex(0x9cb0cc);
+        hemisphere.groundColor.setHex(0x2d2822);
+        hemisphere.intensity = 0.85;
         pointLights.forEach((l) => {
           l.color.setHex(0xffaa55);
-          l.intensity = smoothInterior * 1.8;
+          l.intensity = smoothInterior * 2.2;
         });
         landscapeLights.forEach((l) => {
           l.color.setHex(0xffc078);
-          l.intensity = smoothLandscape * 1.2;
+          l.intensity = smoothLandscape * 1.6;
         });
         break;
 
       case 'golden':
         // Warm low-angle golden hour sunlight
         sun.color.setHex(0xffaa44);
-        sun.intensity = 2.4;
+        sun.intensity = isHero ? 3.0 : 2.6;
         sun.position.set(-28, 14, 22);
         rim.color.setHex(0x738a9e);
-        rim.intensity = 0.5;
+        rim.intensity = 0.6;
         hemisphere.color.setHex(0xf4c28d);
         hemisphere.groundColor.setHex(0x38281a);
-        hemisphere.intensity = 0.7;
+        hemisphere.intensity = 0.85;
         pointLights.forEach((l) => {
           l.color.setHex(0xffbb77);
-          l.intensity = smoothInterior * 1.2;
+          l.intensity = smoothInterior * 1.6;
         });
         landscapeLights.forEach((l) => {
           l.color.setHex(0xffcc88);
-          l.intensity = smoothLandscape * 0.7;
+          l.intensity = smoothLandscape * 1.2;
         });
         break;
 
@@ -136,14 +146,14 @@ export function createLighting(scene: THREE.Scene): SceneLighting {
         rim.intensity = 0.6;
         hemisphere.color.setHex(0x1a2433);
         hemisphere.groundColor.setHex(0x0a0c10);
-        hemisphere.intensity = 0.3;
+        hemisphere.intensity = 0.35;
         pointLights.forEach((l) => {
           l.color.setHex(0xff9933);
-          l.intensity = Math.max(1.0, smoothInterior * 2.6);
+          l.intensity = Math.max(0.6, smoothInterior * 2.8);
         });
         landscapeLights.forEach((l) => {
           l.color.setHex(0xffaa44);
-          l.intensity = Math.max(0.8, smoothLandscape * 1.8);
+          l.intensity = Math.max(0.5, smoothLandscape * 2.0);
         });
         break;
 

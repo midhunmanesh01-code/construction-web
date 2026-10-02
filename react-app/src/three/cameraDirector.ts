@@ -108,34 +108,34 @@ export class CameraDirector {
 
     // 10-shot camera position path (CatmullRom for smooth architectural sequence)
     this.posPath = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-22, 14, 28), // 01 — Wide establishing site view
-      new THREE.Vector3(-14, 2.8, 18), // 02 — Low foundation approach
-      new THREE.Vector3(-9, 5.5, 14),  // 03 — Rising alongside RCC columns
-      new THREE.Vector3(-3.5, 4.0, 9), // 04 — Passing through structural frame
-      new THREE.Vector3(11, 6.0, 13),  // 05 — Exterior architectural sweep
-      new THREE.Vector3(7, 4.0, 9.5),  // 06 — Approaching front facade & louvers
-      new THREE.Vector3(2.5, 3.0, 7.0),// 07 — Moving through glass envelope
-      new THREE.Vector3(-1.5, 2.4, 4.0),// 08 — Revealing double-height living & stair
-      new THREE.Vector3(-12, 8.0, 17), // 09 — Pulling back as landscaping blooms
-      new THREE.Vector3(-18, 7.5, 20), // 10 — Final hero architectural dusk perspective
+      new THREE.Vector3(-14.0, 4.5, 20.5), // 01 — Wide establishing exterior view (matching master reference)
+      new THREE.Vector3(-10.0, 2.2, 16.0), // 02 — Low foundation approach
+      new THREE.Vector3(-7.5, 4.0, 13.5),  // 03 — Rising alongside RCC columns
+      new THREE.Vector3(-4.0, 3.6, 9.5),   // 04 — Passing through structural frame
+      new THREE.Vector3(9.5, 5.0, 13.5),   // 05 — Exterior architectural sweep over carport
+      new THREE.Vector3(6.5, 6.8, 12.0),   // 06 — Approaching upper terrace & pergola
+      new THREE.Vector3(-5.5, 3.0, 8.5),   // 07 — Moving along glass envelope & teak louvers
+      new THREE.Vector3(-2.2, 2.6, 4.8),   // 08 — Revealing double-height living & stair
+      new THREE.Vector3(-10.5, 6.0, 17.5), // 09 — Pulling back as landscaping blooms
+      new THREE.Vector3(-14.0, 4.5, 20.5), // 10 — Final hero architectural dusk perspective
     ]);
 
     // 10-shot camera target path
     this.tgtPath = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 0, 0),     // 01 — Site center
-      new THREE.Vector3(0, 0.6, 0),   // 02 — Foundation plinth
-      new THREE.Vector3(0, 3.6, 0),   // 03 — Structure midpoint
-      new THREE.Vector3(0, 3.2, -1),  // 04 — Interior frame
-      new THREE.Vector3(0, 3.6, 0),   // 05 — Building center
-      new THREE.Vector3(0, 4.2, 3),   // 06 — Facade detail
-      new THREE.Vector3(0, 2.8, 0),   // 07 — Glass curtain
-      new THREE.Vector3(1.2, 2.8, -1.5), // 08 — Double-height atrium
-      new THREE.Vector3(0, 3.2, 0),   // 09 — Complete residence
-      new THREE.Vector3(0, 3.2, 0),   // 10 — Final composition
+      new THREE.Vector3(0.5, 3.2, 0.0),    // 01 — Building composition center
+      new THREE.Vector3(-1.0, 1.2, 0.0),   // 02 — Foundation plinth
+      new THREE.Vector3(-1.5, 3.5, 0.0),   // 03 — Structure midpoint
+      new THREE.Vector3(0.0, 3.0, 0.0),    // 04 — Interior frame
+      new THREE.Vector3(2.5, 3.4, 0.0),    // 05 — Building center
+      new THREE.Vector3(4.0, 5.2, 0.0),    // 06 — Pergola & terrace detail
+      new THREE.Vector3(-3.0, 2.8, 0.0),   // 07 — Glass curtain
+      new THREE.Vector3(0.5, 2.8, -1.0),   // 08 — Double-height atrium
+      new THREE.Vector3(0.0, 3.2, 0.0),    // 09 — Complete residence
+      new THREE.Vector3(0.5, 3.2, 0.0),    // 10 — Final composition
     ]);
 
-    this.orbitAngle0 = Math.atan2(20, -18);
-    this.orbitRadius0 = Math.hypot(18, 20);
+    this.orbitAngle0 = Math.atan2(20.5, -14.0);
+    this.orbitRadius0 = Math.hypot(14.0, 20.5);
   }
 
   /**

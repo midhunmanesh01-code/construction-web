@@ -272,31 +272,17 @@ export class ConstructionAnimator {
   // -----------------------------------------------------------------------
 
   private initHide() {
-    // First, hide ALL meshes in the model (even unmanaged ones)
+    // Position managed entries at their initial assembled positions
+    for (const e of this.entries) {
+      e.object.position.copy(e.originalPos);
+      e.object.scale.copy(e.originalScale);
+    }
     this.model.root.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh) {
-        obj.visible = false;
+        obj.visible = true;
       }
     });
-
-    // Position managed entries at their animation start offsets
-    for (const e of this.entries) {
-      if (e.animation === 'grow') {
-        e.object.scale.set(0.001, 0.001, 0.001);
-      }
-      if (
-        e.animation === 'riseY' ||
-        e.animation === 'slideX' ||
-        e.animation === 'slideZ' ||
-        e.animation === 'settle'
-      ) {
-        e.object.position.set(
-          e.originalPos.x + e.offsetX,
-          e.originalPos.y + e.offsetY,
-          e.originalPos.z + e.offsetZ,
-        );
-      }
-    }
+    this.allRevealed = true;
   }
 
   // -----------------------------------------------------------------------
@@ -332,12 +318,44 @@ export class ConstructionAnimator {
   // -----------------------------------------------------------------------
 
   update(progress: number) {
-    // Re-hide if user scrolls back from completed state
-    if (progress < 0.99 && this.allRevealed) {
+    // 1. Initial Hero Frame (progress <= 0.005): Full residence visible in establishing shot
+    if (progress <= 0.005) {
+      if (!this.allRevealed) {
+        this.model.root.traverse((obj) => {
+          if ((obj as THREE.Mesh).isMesh) obj.visible = true;
+        });
+        for (const e of this.entries) {
+          e.object.position.copy(e.originalPos);
+          e.object.scale.copy(e.originalScale);
+          this.setMeshVisibility(e.object, true);
+        }
+        this.allRevealed = true;
+      }
+      return;
+    }
+
+    // 2. Transition from Hero to Construction Sequence
+    if (this.allRevealed && progress < 0.96) {
       this.model.root.traverse((obj) => {
         if ((obj as THREE.Mesh).isMesh) obj.visible = false;
       });
       this.allRevealed = false;
+    }
+
+    // 3. Final Completed State (progress >= 0.96)
+    if (progress >= 0.96) {
+      if (!this.allRevealed) {
+        this.model.root.traverse((obj) => {
+          if ((obj as THREE.Mesh).isMesh) obj.visible = true;
+        });
+        for (const e of this.entries) {
+          e.object.position.copy(e.originalPos);
+          e.object.scale.copy(e.originalScale);
+          this.setMeshVisibility(e.object, true);
+        }
+        this.allRevealed = true;
+      }
+      return;
     }
 
     // Animate each managed entry
