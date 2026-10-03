@@ -30,6 +30,7 @@ export class FrameCacheManager {
   private cache: Map<number, DecodedFrame> = new Map();
   private permanentKeys: Set<number> = new Set();
   private loadingSet: Set<number> = new Set();
+  private activeControllers: Map<number, AbortController> = new Map();
   private queue: number[] = [];
   private activeWorkers = 0;
   private lastDrawnImage: DecodedFrame | null = null;
@@ -84,38 +85,53 @@ export class FrameCacheManager {
   public requestFrames(targetIndex: number, direction = 1, velocity = 0): void {
     this.pruneCache(targetIndex);
 
+    // Abort obsolete workers that are far (> 60 frames) from targetIndex
+    for (const [activeIdx, controller] of this.activeControllers.entries()) {
+      if (Math.abs(activeIdx - targetIndex) > 60 && !this.permanentKeys.has(activeIdx)) {
+        controller.abort();
+        this.activeControllers.delete(activeIdx);
+        this.loadingSet.delete(activeIdx);
+        this.activeWorkers = Math.max(0, this.activeWorkers - 1);
+      }
+    }
+
     const desired: number[] = [targetIndex];
 
-    // Immediate neighbors (+/- 3)
-    for (let i = 1; i <= 3; i++) {
+    // Priority 1: Immediate neighbors (+/- 5 frames)
+    for (let i = 1; i <= 5; i++) {
       if (targetIndex + i <= this.config.totalFrames) desired.push(targetIndex + i);
       if (targetIndex - i >= 1) desired.push(targetIndex - i);
     }
 
-    const dynamicAhead = Math.min(50, this.config.preloadAhead + Math.round(velocity * 8));
+    // Priority 2: Lookahead based on scroll direction & velocity
+    const dynamicAhead = Math.min(60, this.config.preloadAhead + Math.round(velocity * 10));
     const dynamicBehind = this.config.preloadBehind;
 
     if (direction >= 0) {
-      for (let i = 4; i <= dynamicAhead; i++) {
+      for (let i = 6; i <= dynamicAhead; i++) {
         const idx = targetIndex + i;
         if (idx <= this.config.totalFrames) desired.push(idx);
       }
-      for (let i = 4; i <= dynamicBehind; i++) {
+      for (let i = 6; i <= dynamicBehind; i++) {
         const idx = targetIndex - i;
         if (idx >= 1) desired.push(idx);
       }
     } else {
-      for (let i = 4; i <= dynamicAhead; i++) {
+      for (let i = 6; i <= dynamicAhead; i++) {
         const idx = targetIndex - i;
         if (idx >= 1) desired.push(idx);
       }
-      for (let i = 4; i <= dynamicBehind; i++) {
+      for (let i = 6; i <= dynamicBehind; i++) {
         const idx = targetIndex + i;
         if (idx <= this.config.totalFrames) desired.push(idx);
       }
     }
 
-    this.queue = desired.filter(idx => !this.cache.has(idx) && !this.loadingSet.has(idx));
+    // Sort queue strictly by distance to targetIndex (nearest first)
+    const unCached = desired.filter(idx => !this.cache.has(idx) && !this.loadingSet.has(idx));
+    unCached.sort((a, b) => Math.abs(a - targetIndex) - Math.abs(b - targetIndex));
+    this.queue = unCached;
+
     this.processQueue();
   }
 
@@ -126,9 +142,29 @@ export class FrameCacheManager {
         this.loadFrame(nextIndex);
       }
     }
+
+    // Opportunistic idle prefetch of permanent keyframes
+    if (this.queue.length === 0 && this.activeWorkers < Math.floor(this.config.concurrencyLimit / 2)) {
+      this.fillKeyframeWorker();
+    }
+  }
+
+  private fillKeyframeWorker(): void {
+    for (const keyframe of this.permanentKeys) {
+      if (!this.cache.has(keyframe) && !this.loadingSet.has(keyframe)) {
+        this.loadFrame(keyframe);
+        break;
+      }
+    }
   }
 
   private async loadFrame(index: number): Promise<void> {
+    if (this.cache.has(index) || this.loadingSet.has(index)) {
+      return;
+    }
+
+    const controller = new AbortController();
+    this.activeControllers.set(index, controller);
     this.loadingSet.add(index);
     this.activeWorkers++;
 
@@ -138,7 +174,7 @@ export class FrameCacheManager {
       let imageObj: DecodedFrame;
 
       if (typeof window !== 'undefined' && 'createImageBitmap' in window && 'fetch' in window) {
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const blob = await res.blob();
         imageObj = await createImageBitmap(blob);
@@ -153,6 +189,7 @@ export class FrameCacheManager {
       }
 
       this.cache.set(index, imageObj);
+      this.activeControllers.delete(index);
       this.loadingSet.delete(index);
       this.activeWorkers--;
 
@@ -171,10 +208,13 @@ export class FrameCacheManager {
       }
 
       this.processQueue();
-    } catch {
+    } catch (err: unknown) {
+      this.activeControllers.delete(index);
       this.loadingSet.delete(index);
       this.activeWorkers--;
-      this.processQueue();
+      if ((err as Error)?.name !== 'AbortError') {
+        this.processQueue();
+      }
     }
   }
 
@@ -204,8 +244,6 @@ export class FrameCacheManager {
   public preloadInitialSequence(callback: () => void): void {
     this.onInitialReady = callback;
 
-    // Safety fallback: If initial buffering takes longer than 3.5s (e.g. 404/network stall),
-    // gracefully dismiss preloader so the site is never stuck on a locked screen.
     setTimeout(() => {
       if (this.onInitialReady) {
         console.warn('[M&M Engine] Initial buffer timeout. Releasing preloader.');
@@ -221,7 +259,7 @@ export class FrameCacheManager {
     }
     this.processQueue();
 
-    setTimeout(() => this.preloadKeyframeGrid(), 1000);
+    setTimeout(() => this.preloadKeyframeGrid(), 800);
   }
 
   private preloadKeyframeGrid(): void {
@@ -234,6 +272,10 @@ export class FrameCacheManager {
   }
 
   public destroy(): void {
+    for (const [, controller] of this.activeControllers.entries()) {
+      controller.abort();
+    }
+    this.activeControllers.clear();
     for (const [, obj] of this.cache.entries()) {
       if (obj && 'close' in obj && typeof (obj as ImageBitmap).close === 'function') {
         (obj as ImageBitmap).close();

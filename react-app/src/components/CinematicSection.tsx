@@ -19,12 +19,12 @@ const CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
   framePath: (index: number) =>
     `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
-  maxCacheSize: 240,
+  maxCacheSize: 260,
   concurrencyLimit: 12,
   keyframeStep: 10,
-  preloadAhead: 45,
+  preloadAhead: 50,
   preloadBehind: 20,
-  lerpFactor: 0.16,
+  lerpFactor: 0.35,
   maxDPR: 2.0,
 };
 
@@ -131,8 +131,14 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     const cacheManager = cacheManagerRef.current;
     if (!section || !cacheManager) return;
 
+    const rect = section.getBoundingClientRect();
+    const scrollableDistance = section.offsetHeight - window.innerHeight;
+    if (scrollableDistance <= 0) return;
+
+    const currentY = -rect.top;
+    const rawProgress = Math.min(Math.max(currentY / scrollableDistance, 0), 1);
+
     const now = performance.now();
-    const currentY = window.scrollY || window.pageYOffset || 0;
     const deltaY = currentY - lastScrollYRef.current;
     const deltaTime = Math.max(1, now - lastScrollTimeRef.current);
 
@@ -140,12 +146,6 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     const scrollDirection = deltaY >= 0 ? 1 : -1;
     lastScrollYRef.current = currentY;
     lastScrollTimeRef.current = now;
-
-    const scrollableDistance = section.offsetHeight - window.innerHeight;
-    if (scrollableDistance <= 0) return;
-
-    // Progress through the cinematic section: 0.0 -> 1.0
-    const rawProgress = Math.min(Math.max(currentY / scrollableDistance, 0), 1);
 
     // Map 0% -> 92% of the scroll track to frames 1 -> 960, leaving a smooth 8% dwell buffer
     // at the finish so the user can enjoy the completed architectural view before entering About.
@@ -187,7 +187,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       const absDiff = Math.abs(diff);
 
       if (absDiff > 0.005) {
-        const dynamicFactor = Math.min(0.45, CONFIG.lerpFactor + absDiff * 0.004);
+        const dynamicFactor = Math.min(0.85, CONFIG.lerpFactor + absDiff * 0.015);
         currentFrameFloatRef.current += diff * dynamicFactor;
       } else {
         currentFrameFloatRef.current = targetFrameIndexRef.current;
