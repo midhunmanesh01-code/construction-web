@@ -19,12 +19,12 @@ const CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
   framePath: (index: number) =>
     `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
-  maxCacheSize: 280,
-  concurrencyLimit: 14,
-  keyframeStep: 8,
-  preloadAhead: 60,
-  preloadBehind: 25,
-  lerpFactor: 0.45,
+  maxCacheSize: 320,
+  concurrencyLimit: 8,
+  keyframeStep: 16,
+  preloadAhead: 40,
+  preloadBehind: 15,
+  lerpFactor: 0.28,
   maxDPR: 2.0,
 };
 
@@ -171,9 +171,8 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     lastScrollYRef.current = currentY;
     lastScrollTimeRef.current = now;
 
-    // Map 0% -> 92% of the scroll track to frames 1 -> 960 with smooth 8% completion buffer
-    const frameProgress = Math.min(1, rawProgress / 0.92);
-    const target = 1 + Math.round(frameProgress * (CONFIG.totalFrames - 1));
+    // Direct 1:1 progression mapping across the entire scroll track from frame 1 to 960
+    const target = 1 + Math.round(rawProgress * (CONFIG.totalFrames - 1));
     targetFrameIndexRef.current = target;
 
     cacheManager.requestFrames(target, scrollDirection, scrollVelocity);
@@ -210,8 +209,8 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       const absDiff = Math.abs(diff);
 
       if (absDiff > 0.005) {
-        // Dynamic snappy lerp: instant response for fast scrolls, buttery smooth for slow micro-scrolls
-        const factor = Math.min(0.92, 0.45 + absDiff * 0.02);
+        // Dynamic smooth lerp: responsive yet buttery smooth
+        const factor = Math.min(0.65, CONFIG.lerpFactor + absDiff * 0.015);
         currentFrameFloatRef.current += diff * factor;
       } else {
         currentFrameFloatRef.current = targetFrameIndexRef.current;

@@ -94,16 +94,6 @@ export class FrameCacheManager {
   public requestFrames(targetIndex: number, direction = 1, velocity = 0): void {
     this.pruneCache(targetIndex);
 
-    // Abort obsolete workers that are far (> 60 frames) from targetIndex
-    for (const [activeIdx, controller] of this.activeControllers.entries()) {
-      if (Math.abs(activeIdx - targetIndex) > 60 && !this.permanentKeys.has(activeIdx)) {
-        controller.abort();
-        this.activeControllers.delete(activeIdx);
-        this.loadingSet.delete(activeIdx);
-        this.activeWorkers = Math.max(0, this.activeWorkers - 1);
-      }
-    }
-
     const desired: number[] = [targetIndex];
 
     // Priority 1: Immediate neighbors (+/- 5 frames)
@@ -112,8 +102,8 @@ export class FrameCacheManager {
       if (targetIndex - i >= 1) desired.push(targetIndex - i);
     }
 
-    // Priority 2: Lookahead based on scroll direction & velocity
-    const dynamicAhead = Math.min(60, this.config.preloadAhead + Math.round(velocity * 10));
+    // Priority 2: Direction-biased lookahead based on scroll velocity
+    const dynamicAhead = Math.min(50, this.config.preloadAhead + Math.round(velocity * 8));
     const dynamicBehind = this.config.preloadBehind;
 
     if (direction >= 0) {
@@ -136,8 +126,17 @@ export class FrameCacheManager {
       }
     }
 
-    // Sort queue strictly by distance to targetIndex (nearest first)
-    const unCached = desired.filter(idx => !this.cache.has(idx) && !this.loadingSet.has(idx));
+    // Deduplicate & filter frames that are not yet cached or actively loading
+    const seen = new Set<number>();
+    const unCached: number[] = [];
+    for (const idx of desired) {
+      if (!seen.has(idx) && !this.cache.has(idx) && !this.loadingSet.has(idx)) {
+        seen.add(idx);
+        unCached.push(idx);
+      }
+    }
+
+    // Sort by priority (closest to targetIndex first)
     unCached.sort((a, b) => Math.abs(a - targetIndex) - Math.abs(b - targetIndex));
     this.queue = unCached;
 
@@ -153,16 +152,16 @@ export class FrameCacheManager {
     }
 
     // Opportunistic idle prefetch of permanent keyframes
-    if (this.queue.length === 0 && this.activeWorkers < Math.floor(this.config.concurrencyLimit / 2)) {
+    if (this.queue.length === 0 && this.activeWorkers < Math.max(2, Math.floor(this.config.concurrencyLimit / 2))) {
       this.fillKeyframeWorker();
     }
   }
 
   private fillKeyframeWorker(): void {
     for (const keyframe of this.permanentKeys) {
+      if (this.activeWorkers >= this.config.concurrencyLimit) break;
       if (!this.cache.has(keyframe) && !this.loadingSet.has(keyframe)) {
         this.loadFrame(keyframe);
-        break;
       }
     }
   }
