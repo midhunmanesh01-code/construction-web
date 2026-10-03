@@ -19,12 +19,12 @@ const CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
   framePath: (index: number) =>
     `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
-  maxCacheSize: 260,
-  concurrencyLimit: 12,
-  keyframeStep: 10,
-  preloadAhead: 50,
-  preloadBehind: 20,
-  lerpFactor: 0.35,
+  maxCacheSize: 280,
+  concurrencyLimit: 14,
+  keyframeStep: 8,
+  preloadAhead: 60,
+  preloadBehind: 25,
+  lerpFactor: 0.45,
   maxDPR: 2.0,
 };
 
@@ -34,13 +34,19 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
 }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const cacheManagerRef = useRef<FrameCacheManager | null>(null);
 
-  const [currentFrame, setCurrentFrame] = useState<number>(1);
+  // Discrete state only updated when boundary or stage actually changes!
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(true);
   const [activeStage, setActiveStage] = useState<CinematicStage>(
     SITE_CONTENT.cinematic.stages[0]
   );
   const [progressPercent, setProgressPercent] = useState<number>(0);
+
+  const activeStageIdRef = useRef<string>(SITE_CONTENT.cinematic.stages[0].id);
+  const isHeroVisibleRef = useRef<boolean>(true);
+  const lastProgressPercentRef = useRef<number>(0);
 
   const currentFrameFloatRef = useRef<number>(1.0);
   const targetFrameIndexRef = useRef<number>(1);
@@ -56,7 +62,10 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     const cacheManager = cacheManagerRef.current;
     if (!canvas || !cacheManager) return;
 
-    const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    if (!ctxRef.current) {
+      ctxRef.current = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    }
+    const ctx = ctxRef.current;
     if (!ctx) return;
 
     const { img, sourceIndex } = cacheManager.getNearestFrame(frameIndex);
@@ -85,14 +94,29 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       Math.round(((frameIndex - 1) / (total - 1)) * 100)
     );
 
-    setCurrentFrame(frameIndex);
-    setProgressPercent(percent);
+    // 1. Only update progress state if integer percent changed
+    if (percent !== lastProgressPercentRef.current) {
+      lastProgressPercentRef.current = percent;
+      setProgressPercent(percent);
+    }
 
+    // 2. Only update hero/HUD visibility state when crossing boundary
+    const heroShouldBeVisible = frameIndex <= 45;
+    if (heroShouldBeVisible !== isHeroVisibleRef.current) {
+      isHeroVisibleRef.current = heroShouldBeVisible;
+      setIsHeroVisible(heroShouldBeVisible);
+    }
+
+    // 3. Only update activeStage state when stage ID actually changes (only 4 times across 960 frames!)
     const stages = SITE_CONTENT.cinematic.stages;
     const active =
       stages.find((s) => frameIndex >= s.frameStart && frameIndex <= s.frameEnd) ||
       stages[0];
-    setActiveStage(active);
+
+    if (active.id !== activeStageIdRef.current) {
+      activeStageIdRef.current = active.id;
+      setActiveStage(active);
+    }
   }, []);
 
   const renderFrame = useCallback(
@@ -115,10 +139,10 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
 
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (ctx) {
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
+    ctxRef.current = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    if (ctxRef.current) {
+      ctxRef.current.imageSmoothingEnabled = true;
+      ctxRef.current.imageSmoothingQuality = 'high';
     }
 
     if (lastDrawnFrameRef.current >= 1) {
@@ -147,8 +171,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     lastScrollYRef.current = currentY;
     lastScrollTimeRef.current = now;
 
-    // Map 0% -> 92% of the scroll track to frames 1 -> 960, leaving a smooth 8% dwell buffer
-    // at the finish so the user can enjoy the completed architectural view before entering About.
+    // Map 0% -> 92% of the scroll track to frames 1 -> 960 with smooth 8% completion buffer
     const frameProgress = Math.min(1, rawProgress / 0.92);
     const target = 1 + Math.round(frameProgress * (CONFIG.totalFrames - 1));
     targetFrameIndexRef.current = target;
@@ -187,8 +210,9 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       const absDiff = Math.abs(diff);
 
       if (absDiff > 0.005) {
-        const dynamicFactor = Math.min(0.85, CONFIG.lerpFactor + absDiff * 0.015);
-        currentFrameFloatRef.current += diff * dynamicFactor;
+        // Dynamic snappy lerp: instant response for fast scrolls, buttery smooth for slow micro-scrolls
+        const factor = Math.min(0.92, 0.45 + absDiff * 0.02);
+        currentFrameFloatRef.current += diff * factor;
       } else {
         currentFrameFloatRef.current = targetFrameIndexRef.current;
       }
@@ -218,9 +242,6 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     };
   }, [resizeCanvas, onScroll, onFrameLoaded, onBufferProgress, onInitialReady, renderFrame]);
 
-  const isHeroVisible = currentFrame <= 45;
-  const isHudActive = currentFrame > 45;
-
   return (
     <section id="cinematic-section" ref={sectionRef}>
       <div id="cinematic-sticky">
@@ -243,7 +264,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
 
         {/* Cinematic HUD */}
         <CinematicHud
-          isActive={isHudActive}
+          isActive={!isHeroVisible}
           progressPercent={progressPercent}
           activeStage={activeStage}
         />

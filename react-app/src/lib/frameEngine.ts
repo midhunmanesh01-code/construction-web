@@ -62,24 +62,33 @@ export class FrameCacheManager {
       return { img, isExact: true, sourceIndex: targetIndex };
     }
 
-    let closestIndex = -1;
-    let minDistance = Infinity;
-
-    for (const [cachedIndex] of this.cache.entries()) {
-      const dist = Math.abs(cachedIndex - targetIndex);
-      if (dist < minDistance) {
-        minDistance = dist;
-        closestIndex = cachedIndex;
+    // Fast directional search outwards from targetIndex
+    const maxSearch = 60;
+    for (let offset = 1; offset <= maxSearch; offset++) {
+      const prev = targetIndex - offset;
+      if (prev >= 1 && this.cache.has(prev)) {
+        const img = this.cache.get(prev)!;
+        this.lastDrawnImage = img;
+        return { img, isExact: false, sourceIndex: prev };
+      }
+      const next = targetIndex + offset;
+      if (next <= this.config.totalFrames && this.cache.has(next)) {
+        const img = this.cache.get(next)!;
+        this.lastDrawnImage = img;
+        return { img, isExact: false, sourceIndex: next };
       }
     }
 
-    if (closestIndex !== -1) {
-      const img = this.cache.get(closestIndex)!;
-      this.lastDrawnImage = img;
-      return { img, isExact: false, sourceIndex: closestIndex };
+    if (this.lastDrawnImage) {
+      return { img: this.lastDrawnImage, isExact: false, sourceIndex: -1 };
     }
 
-    return { img: this.lastDrawnImage, isExact: false, sourceIndex: -1 };
+    for (const [idx, img] of this.cache.entries()) {
+      this.lastDrawnImage = img;
+      return { img, isExact: false, sourceIndex: idx };
+    }
+
+    return { img: null, isExact: false, sourceIndex: -1 };
   }
 
   public requestFrames(targetIndex: number, direction = 1, velocity = 0): void {
@@ -174,7 +183,10 @@ export class FrameCacheManager {
       let imageObj: DecodedFrame;
 
       if (typeof window !== 'undefined' && 'createImageBitmap' in window && 'fetch' in window) {
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(url, {
+          signal: controller.signal,
+          cache: 'force-cache',
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const blob = await res.blob();
         imageObj = await createImageBitmap(blob);
