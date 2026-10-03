@@ -22,7 +22,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({ onOpenMobileMenu }) => {
           onClick={(e) => handleNavClick(e, '#cinematic-section')}
         >
           <span className="logo-main">
-            M & M<span className="logo-dot">.</span>
+            M & M<span className="logo-dot"></span>
           </span>
           <span className="logo-sub">CONSTRUCTIONS</span>
         </a>
@@ -35,7 +35,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({ onOpenMobileMenu }) => {
                 className="nav-link"
                 onClick={(e) => handleNavClick(e, '#cinematic-section')}
               >
-                Experience
+                Home
               </a>
             </li>
             <li>
