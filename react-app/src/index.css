@@ -58,7 +58,7 @@
 
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   background-color: var(--bg-obsidian);
   color: var(--text-primary);
   font-family: var(--font-body);
@@ -444,7 +444,7 @@ img, canvas {
 #cinematic-section {
   position: relative;
   width: 100%;
-  height: 600vh; /* Controlled scroll length for 960 frames */
+  height: 1400vh; /* Smooth, cinematic scroll length for 960 frames */
   background-color: var(--bg-obsidian);
 }
 
@@ -625,7 +625,7 @@ img, canvas {
 
 .hud-top {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 

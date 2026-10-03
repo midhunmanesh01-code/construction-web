@@ -19,12 +19,12 @@ const CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
   framePath: (index: number) =>
     `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
-  maxCacheSize: 140,
-  concurrencyLimit: 8,
-  keyframeStep: 16,
-  preloadAhead: 30,
-  preloadBehind: 12,
-  lerpFactor: 0.22,
+  maxCacheSize: 240,
+  concurrencyLimit: 12,
+  keyframeStep: 10,
+  preloadAhead: 45,
+  preloadBehind: 20,
+  lerpFactor: 0.16,
   maxDPR: 2.0,
 };
 
@@ -144,8 +144,13 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     const scrollableDistance = section.offsetHeight - window.innerHeight;
     if (scrollableDistance <= 0) return;
 
-    const progress = Math.min(Math.max(currentY / scrollableDistance, 0), 1);
-    const target = 1 + Math.round(progress * (CONFIG.totalFrames - 1));
+    // Progress through the cinematic section: 0.0 -> 1.0
+    const rawProgress = Math.min(Math.max(currentY / scrollableDistance, 0), 1);
+
+    // Map 0% -> 92% of the scroll track to frames 1 -> 960, leaving a smooth 8% dwell buffer
+    // at the finish so the user can enjoy the completed architectural view before entering About.
+    const frameProgress = Math.min(1, rawProgress / 0.92);
+    const target = 1 + Math.round(frameProgress * (CONFIG.totalFrames - 1));
     targetFrameIndexRef.current = target;
 
     cacheManager.requestFrames(target, scrollDirection, scrollVelocity);
@@ -182,7 +187,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       const absDiff = Math.abs(diff);
 
       if (absDiff > 0.005) {
-        const dynamicFactor = Math.min(0.5, CONFIG.lerpFactor + absDiff * 0.006);
+        const dynamicFactor = Math.min(0.45, CONFIG.lerpFactor + absDiff * 0.004);
         currentFrameFloatRef.current += diff * dynamicFactor;
       } else {
         currentFrameFloatRef.current = targetFrameIndexRef.current;
@@ -213,8 +218,8 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     };
   }, [resizeCanvas, onScroll, onFrameLoaded, onBufferProgress, onInitialReady, renderFrame]);
 
-  const isHeroVisible = currentFrame <= 35;
-  const isHudActive = currentFrame > 35;
+  const isHeroVisible = currentFrame <= 45;
+  const isHudActive = currentFrame > 45;
 
   return (
     <section id="cinematic-section" ref={sectionRef}>
@@ -239,8 +244,6 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         {/* Cinematic HUD */}
         <CinematicHud
           isActive={isHudActive}
-          frameIndex={currentFrame}
-          totalFrames={CONFIG.totalFrames}
           progressPercent={progressPercent}
           activeStage={activeStage}
         />

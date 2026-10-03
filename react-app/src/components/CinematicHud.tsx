@@ -3,28 +3,18 @@ import { CinematicStage } from '../types';
 
 interface CinematicHudProps {
   isActive: boolean;
-  frameIndex: number;
-  totalFrames: number;
   progressPercent: number;
   activeStage: CinematicStage;
 }
 
 export const CinematicHud: React.FC<CinematicHudProps> = ({
   isActive,
-  frameIndex,
-  totalFrames,
   progressPercent,
   activeStage,
 }) => {
   return (
     <div id="cinematic-hud" className={isActive ? 'active' : ''}>
       <div className="hud-top">
-        <div className="hud-frame-counter">
-          <span className="frame-dot" />
-          <span className="frame-text" id="hud-frame-num">
-            FRAME {String(frameIndex).padStart(4, '0')} / {String(totalFrames).padStart(4, '0')}
-          </span>
-        </div>
         <div className="hud-stage-indicator" id="hud-stage-num">
           {activeStage.step} · {activeStage.title} {activeStage.subtitle}
         </div>
