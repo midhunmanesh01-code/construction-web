@@ -10,15 +10,20 @@ interface CinematicSectionProps {
   onBufferProgress: (percent: number) => void;
 }
 
-const FRAME_BASE_URL =
+const DESKTOP_FRAME_BASE_URL =
   (import.meta.env.VITE_FRAME_BASE_URL as string) ||
   SITE_CONTENT.cinematic.frameBaseUrl ||
   '/frames';
 
-const CONFIG: FrameEngineConfig = {
+const MOBILE_FRAME_BASE_URL =
+  (import.meta.env.VITE_MOBILE_FRAME_BASE_URL as string) || '';
+
+const MOBILE_BREAKPOINT = 768;
+
+const DESKTOP_CONFIG: FrameEngineConfig = {
   totalFrames: SITE_CONTENT.cinematic.totalFrames || 960,
   framePath: (index: number) =>
-    `${FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
+    `${DESKTOP_FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`,
   maxCacheSize: 320,
   concurrencyLimit: 8,
   keyframeStep: 16,
@@ -28,6 +33,28 @@ const CONFIG: FrameEngineConfig = {
   maxDPR: 2.0,
 };
 
+const MOBILE_CONFIG: FrameEngineConfig = {
+  totalFrames: 480,
+  framePath: (index: number) => {
+    if (MOBILE_FRAME_BASE_URL) {
+      return `${MOBILE_FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(index).padStart(4, '0')}.jpg`;
+    }
+    // High-performance mobile fallback: samples every 2nd frame from the master sequence
+    const mappedDesktopIndex = Math.min(960, Math.max(1, (index - 1) * 2 + 1));
+    return `${DESKTOP_FRAME_BASE_URL.replace(/\/+$/, '')}/frame-${String(mappedDesktopIndex).padStart(4, '0')}.jpg`;
+  },
+  maxCacheSize: 80,
+  concurrencyLimit: 4,
+  keyframeStep: 20,
+  preloadAhead: 12,
+  preloadBehind: 8,
+  lerpFactor: 0.14,
+  maxDPR: 1.5,
+};
+
+const getIsMobile = () =>
+  typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT;
+
 export const CinematicSection: React.FC<CinematicSectionProps> = ({
   onInitialReady,
   onBufferProgress,
@@ -36,6 +63,11 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const cacheManagerRef = useRef<FrameCacheManager | null>(null);
+
+  const isMobileRef = useRef<boolean>(getIsMobile());
+  const configRef = useRef<FrameEngineConfig>(
+    isMobileRef.current ? MOBILE_CONFIG : DESKTOP_CONFIG
+  );
 
   // Discrete state only updated when boundary or stage actually changes!
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(true);
@@ -88,7 +120,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
   }, []);
 
   const updateHUD = useCallback((frameIndex: number) => {
-    const total = CONFIG.totalFrames;
+    const total = configRef.current.totalFrames;
     const percent = Math.min(
       100,
       Math.round(((frameIndex - 1) / (total - 1)) * 100)
@@ -101,17 +133,22 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     }
 
     // 2. Only update hero/HUD visibility state when crossing boundary
-    const heroShouldBeVisible = frameIndex <= 45;
+    const isMobile = isMobileRef.current;
+    const heroBoundary = isMobile ? 23 : 45;
+    const heroShouldBeVisible = frameIndex <= heroBoundary;
     if (heroShouldBeVisible !== isHeroVisibleRef.current) {
       isHeroVisibleRef.current = heroShouldBeVisible;
       setIsHeroVisible(heroShouldBeVisible);
     }
 
-    // 3. Only update activeStage state when stage ID actually changes (only 4 times across 960 frames!)
+    // 3. Only update activeStage state when stage ID actually changes
     const stages = SITE_CONTENT.cinematic.stages;
     const active =
-      stages.find((s) => frameIndex >= s.frameStart && frameIndex <= s.frameEnd) ||
-      stages[0];
+      stages.find((s) => {
+        const start = isMobile ? Math.round(s.frameStart / 2) : s.frameStart;
+        const end = isMobile ? Math.round(s.frameEnd / 2) : s.frameEnd;
+        return frameIndex >= start && frameIndex <= end;
+      }) || stages[0];
 
     if (active.id !== activeStageIdRef.current) {
       activeStageIdRef.current = active.id;
@@ -132,7 +169,12 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, CONFIG.maxDPR);
+    const isMobile = getIsMobile();
+    isMobileRef.current = isMobile;
+    const config = isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
+    configRef.current = config;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, config.maxDPR);
     const width = canvas.clientWidth || window.innerWidth;
     const height = canvas.clientHeight || window.innerHeight;
 
@@ -171,8 +213,9 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     lastScrollYRef.current = currentY;
     lastScrollTimeRef.current = now;
 
-    // Direct continuous progression mapping across the entire scroll track from frame 1 to 960
-    const target = 1 + rawProgress * (CONFIG.totalFrames - 1);
+    // Direct continuous progression mapping across the active frame set (960 on desktop, 480 on mobile)
+    const totalFrames = configRef.current.totalFrames;
+    const target = 1 + rawProgress * (totalFrames - 1);
     targetFrameIndexRef.current = target;
 
     cacheManager.requestFrames(Math.round(target), scrollDirection, scrollVelocity);
@@ -189,8 +232,13 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
   }, []);
 
   useEffect(() => {
+    const isMobile = getIsMobile();
+    isMobileRef.current = isMobile;
+    const activeConfig = isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
+    configRef.current = activeConfig;
+
     const cacheManager = new FrameCacheManager(
-      CONFIG,
+      activeConfig,
       (loadedIndex) => onFrameLoaded(loadedIndex),
       (percent) => onBufferProgress(percent)
     );
@@ -222,7 +270,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       }
 
       const frameToDraw = Math.min(
-        CONFIG.totalFrames,
+        configRef.current.totalFrames,
         Math.max(1, Math.round(currentFrameFloatRef.current))
       );
 
