@@ -11,6 +11,7 @@ import { ProcessSection } from './sections/ProcessSection';
 import { ContactSection } from './sections/ContactSection';
 import { SiteFooter } from './sections/SiteFooter';
 import { ProjectModal } from './components/ProjectModal';
+import { FloatingActions } from './components/FloatingActions';
 
 export const App: React.FC = () => {
   const [isPreloaderLoaded, setIsPreloaderLoaded] = useState<boolean>(false);
@@ -71,6 +72,9 @@ export const App: React.FC = () => {
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
       />
+
+      {/* Floating Quick Contact Actions (Call & WhatsApp) */}
+      <FloatingActions />
     </>
   );
 };

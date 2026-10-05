@@ -54,11 +54,26 @@ export const ContactSection: React.FC = () => {
               <div className="contact-direct-grid">
                 <div className="contact-direct-item">
                   <span className="contact-item-label">Direct Telephone</span>
-                  <span className="contact-item-value">{contact.details.phone}</span>
+                  <div className="contact-phone-list">
+                    {(contact.details.phones || [contact.details.phone]).map((phoneNum) => (
+                      <a
+                        key={phoneNum}
+                        href={`tel:${phoneNum.replace(/\s+/g, '')}`}
+                        className="contact-item-value contact-item-link"
+                      >
+                        {phoneNum}
+                      </a>
+                    ))}
+                  </div>
                 </div>
                 <div className="contact-direct-item">
                   <span className="contact-item-label">Studio Email</span>
-                  <span className="contact-item-value">{contact.details.email}</span>
+                  <a
+                    href={`mailto:${contact.details.email}`}
+                    className="contact-item-value contact-item-link"
+                  >
+                    {contact.details.email}
+                  </a>
                 </div>
                 <div className="contact-direct-item">
                   <span className="contact-item-label">Studio Location</span>

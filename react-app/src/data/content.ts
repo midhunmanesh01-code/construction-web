@@ -346,10 +346,11 @@ export const SITE_CONTENT: SiteContent = {
     headline: 'Let us build your architectural vision.',
     lead: 'We accept a limited number of bespoke residential and architectural commissions each year to ensure rigorous director-level oversight on every site.',
     details: {
-      phone: '[ADD PHONE]',
-      email: '[ADD EMAIL]',
-      location: '[ADD LOCATION]',
-      hours: '[ADD HOURS]'
+      phone: '+91 7012495244',
+      phones: ['+91 7012495244', '+91 7510838992'],
+      email: 'maneshjohn932@gmail.com',
+      location: 'Manthuka, Kulanada',
+      hours: 'Mon – Sat: 09:00 – 18:00 IST'
     },
     note: 'Consultations available by appointment. Inquiries strictly confidential.'
   },

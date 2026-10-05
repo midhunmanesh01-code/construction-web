@@ -83,6 +83,7 @@ export interface ProcessStep {
 
 export interface ContactDetails {
   phone: string;
+  phones?: string[];
   email: string;
   location: string;
   hours: string;
