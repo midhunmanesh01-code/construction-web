@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ProjectItem } from './types';
 import { Preloader } from './components/Preloader';
 import { SiteHeader } from './components/SiteHeader';
@@ -19,14 +19,28 @@ export const App: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
 
+  // Strictly lock body scroll and keep at top during loading screen
+  useEffect(() => {
+    if (!isPreloaderLoaded) {
+      document.body.style.overflow = 'hidden';
+      window.scrollTo(0, 0);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isPreloaderLoaded]);
+
   const handleBufferProgress = useCallback((percent: number) => {
     setPreloaderProgress(percent);
   }, []);
 
   const handleInitialReady = useCallback(() => {
+    setPreloaderProgress(100);
     setTimeout(() => {
       setIsPreloaderLoaded(true);
-    }, 200);
+    }, 450);
   }, []);
 
   return (
