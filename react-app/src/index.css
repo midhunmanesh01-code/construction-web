@@ -58,7 +58,7 @@
 
 html {
   font-size: 16px;
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
   background-color: var(--bg-obsidian);
   color: var(--text-primary);
   font-family: var(--font-body);

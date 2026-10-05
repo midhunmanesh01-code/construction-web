@@ -22,9 +22,9 @@ const CONFIG: FrameEngineConfig = {
   maxCacheSize: 320,
   concurrencyLimit: 8,
   keyframeStep: 16,
-  preloadAhead: 40,
-  preloadBehind: 15,
-  lerpFactor: 0.28,
+  preloadAhead: 45,
+  preloadBehind: 20,
+  lerpFactor: 0.12,
   maxDPR: 2.0,
 };
 
@@ -171,11 +171,11 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     lastScrollYRef.current = currentY;
     lastScrollTimeRef.current = now;
 
-    // Direct 1:1 progression mapping across the entire scroll track from frame 1 to 960
-    const target = 1 + Math.round(rawProgress * (CONFIG.totalFrames - 1));
+    // Direct continuous progression mapping across the entire scroll track from frame 1 to 960
+    const target = 1 + rawProgress * (CONFIG.totalFrames - 1);
     targetFrameIndexRef.current = target;
 
-    cacheManager.requestFrames(target, scrollDirection, scrollVelocity);
+    cacheManager.requestFrames(Math.round(target), scrollDirection, scrollVelocity);
   }, []);
 
   const onFrameLoaded = useCallback((loadedIndex: number) => {
@@ -200,23 +200,31 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     onScroll();
 
     cacheManager.preloadInitialSequence(() => {
-      renderFrame(targetFrameIndexRef.current);
+      renderFrame(Math.round(targetFrameIndexRef.current));
       onInitialReady();
     });
 
-    const renderLoop = () => {
+    let lastFrameTime = performance.now();
+
+    const renderLoop = (currentTime: number) => {
+      const dt = Math.min(Math.max((currentTime - lastFrameTime) / 1000, 0.001), 0.1);
+      lastFrameTime = currentTime;
+
       const diff = targetFrameIndexRef.current - currentFrameFloatRef.current;
       const absDiff = Math.abs(diff);
 
-      if (absDiff > 0.005) {
-        // Dynamic smooth lerp: responsive yet buttery smooth
-        const factor = Math.min(0.65, CONFIG.lerpFactor + absDiff * 0.015);
-        currentFrameFloatRef.current += diff * factor;
+      if (absDiff > 0.001) {
+        // Butter-smooth frame-rate independent exponential damping
+        const smoothing = 1 - Math.exp(-9 * dt);
+        currentFrameFloatRef.current += diff * smoothing;
       } else {
         currentFrameFloatRef.current = targetFrameIndexRef.current;
       }
 
-      const frameToDraw = Math.round(currentFrameFloatRef.current);
+      const frameToDraw = Math.min(
+        CONFIG.totalFrames,
+        Math.max(1, Math.round(currentFrameFloatRef.current))
+      );
 
       if (frameToDraw !== lastDrawnFrameRef.current || needsRepaintRef.current) {
         renderFrame(frameToDraw);
