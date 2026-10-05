@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { SITE_CONTENT } from '../data/content';
 
+const FORMSPREE_ENDPOINT =
+  (import.meta.env.VITE_FORMSPREE_ENDPOINT as string) ||
+  'https://formspree.io/f/mnpjqyee';
+
 export const ContactSection: React.FC = () => {
   const { contact } = SITE_CONTENT;
-  const [formState, setFormState] = useState<'idle' | 'transmitting' | 'transmitted'>('idle');
+  const [formState, setFormState] = useState<'idle' | 'transmitting' | 'transmitted' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,21 +19,58 @@ export const ContactSection: React.FC = () => {
     brief: '',
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (formState === 'transmitting') return;
+
     setFormState('transmitting');
-    setTimeout(() => {
-      setFormState('transmitted');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        projectType: 'turnkey',
-        location: '',
-        area: '',
-        brief: '',
+    setErrorMessage('');
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          'Full Name': formData.name,
+          'Email Address': formData.email,
+          'Phone Number': formData.phone || 'Not provided',
+          'Project Discipline': formData.projectType,
+          'Proposed Location': formData.location || 'Not provided',
+          'Estimated Built Area': formData.area || 'Not provided',
+          'Architectural Brief / Scope': formData.brief || 'Not provided',
+          _subject: `New Architectural Inquiry from ${formData.name} — M & M Constructions`,
+        }),
       });
-    }, 900);
+
+      if (response.ok) {
+        setFormState('transmitted');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          projectType: 'turnkey',
+          location: '',
+          area: '',
+          brief: '',
+        });
+        setTimeout(() => {
+          setFormState('idle');
+        }, 6000);
+      } else {
+        const data = await response.json().catch(() => null);
+        const errorText =
+          data?.errors?.map((err: { message: string }) => err.message).join(', ') ||
+          'Unable to transmit request. Please verify your details or contact us directly.';
+        setErrorMessage(errorText);
+        setFormState('error');
+      }
+    } catch {
+      setErrorMessage('Network connection error. Please check your connection or call us directly.');
+      setFormState('error');
+    }
   };
 
   const handleChange = (
@@ -36,6 +78,10 @@ export const ContactSection: React.FC = () => {
   ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+    if (formState === 'error') {
+      setFormState('idle');
+      setErrorMessage('');
+    }
   };
 
   return (
@@ -100,6 +146,7 @@ export const ContactSection: React.FC = () => {
                   <input
                     type="text"
                     id="name"
+                    name="name"
                     className="form-input"
                     placeholder="e.g. Alexander Nair"
                     required
@@ -115,6 +162,7 @@ export const ContactSection: React.FC = () => {
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     className="form-input"
                     placeholder="e.g. alexander@example.com"
                     required
@@ -130,6 +178,7 @@ export const ContactSection: React.FC = () => {
                   <input
                     type="tel"
                     id="phone"
+                    name="phone"
                     className="form-input"
                     placeholder="+91 00000 00000"
                     value={formData.phone}
@@ -143,6 +192,7 @@ export const ContactSection: React.FC = () => {
                   </label>
                   <select
                     id="projectType"
+                    name="projectType"
                     className="form-select"
                     value={formData.projectType}
                     onChange={handleChange}
@@ -162,6 +212,7 @@ export const ContactSection: React.FC = () => {
                   <input
                     type="text"
                     id="location"
+                    name="location"
                     className="form-input"
                     placeholder="e.g. Kochi, Kerala"
                     value={formData.location}
@@ -176,6 +227,7 @@ export const ContactSection: React.FC = () => {
                   <input
                     type="text"
                     id="area"
+                    name="area"
                     className="form-input"
                     placeholder="e.g. 6,500 Sq. Ft."
                     value={formData.area}
@@ -189,6 +241,7 @@ export const ContactSection: React.FC = () => {
                   </label>
                   <textarea
                     id="brief"
+                    name="brief"
                     className="form-textarea"
                     placeholder="Describe your site, architectural vision, timeline requirements, and project scope..."
                     value={formData.brief}
@@ -204,6 +257,8 @@ export const ContactSection: React.FC = () => {
                 style={
                   formState === 'transmitted'
                     ? { backgroundColor: '#22c55e', color: '#08090a' }
+                    : formState === 'error'
+                    ? { backgroundColor: '#b91c1c', color: '#ffffff' }
                     : undefined
                 }
               >
@@ -211,9 +266,28 @@ export const ContactSection: React.FC = () => {
                   {formState === 'idle' && 'Initiate Consultation Request'}
                   {formState === 'transmitting' && 'Transmitting Consultation Request...'}
                   {formState === 'transmitted' && 'Request Transmitted · Studio Will Connect'}
+                  {formState === 'error' && 'Transmission Failed · Click to Retry'}
                 </span>
-                <span>→</span>
+                <span>{formState === 'transmitting' ? '⏳' : formState === 'transmitted' ? '✓' : '→'}</span>
               </button>
+
+              {formState === 'error' && errorMessage && (
+                <div
+                  style={{
+                    marginTop: '0.85rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.72rem',
+                    color: '#f87171',
+                    letterSpacing: '0.05em',
+                    textAlign: 'center',
+                    borderLeft: '2px solid #ef4444',
+                    padding: '0.4rem 0.8rem',
+                    background: 'rgba(239, 68, 68, 0.08)',
+                  }}
+                >
+                  {errorMessage}
+                </div>
+              )}
             </form>
           </div>
         </div>
