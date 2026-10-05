@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0be88" />
+      <stop offset="50%" stop-color="#c8a368" />
+      <stop offset="100%" stop-color="#9e6d42" />
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16191f" />
+      <stop offset="100%" stop-color="#08090a" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Obsidian Background with Subtle Gold Border -->
+  <rect width="64" height="64" rx="14" fill="url(#bgGrad)" stroke="#c8a368" stroke-width="1.5" stroke-opacity="0.35" />
+  
+  <!-- Interlocking Architectural Monogram (M & M) -->
+  <path d="M 13 44 L 13 20 L 22.5 33 L 32 20 L 41.5 33 L 51 20 L 51 44" fill="none" stroke="url(#goldGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Architectural Anchor Dot -->
+  <circle cx="32" cy="43" r="2.2" fill="#c8a368" />
+</svg>
