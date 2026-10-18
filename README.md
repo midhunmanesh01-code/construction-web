@@ -73,6 +73,7 @@ At the heart of the experience is an **Ultra-Performance 60 FPS Cinematic Frame 
 construction-web/
 ├── react-app/
 │   ├── public/
+│   │   ├── images/                  # High-resolution architectural photography (hero, about, project portfolio)
 │   │   ├── frames/                  # High-resolution sequential JPG frames (frame-0001.jpg .. frame-0960.jpg)
 │   │   └── favicon.svg              # Studio monogram favicon SVG
 │   ├── src/

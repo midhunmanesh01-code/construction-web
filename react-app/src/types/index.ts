@@ -62,6 +62,7 @@ export interface ProjectItem {
   id: string;
   number: string;
   title: string;
+  image: string;
   category: string;
   location: string;
   area: string;

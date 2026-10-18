@@ -16,14 +16,29 @@ export const AboutSection: React.FC = () => {
                 <span className="highlight">That Endure.</span>
               </h2>
               <p className="section-lead">{about.lead}</p>
+              <div className="about-body-wrap">
+                {about.paragraphs.map((p, idx) => (
+                  <p key={idx} className="about-body-text">
+                    {p}
+                  </p>
+                ))}
+              </div>
             </div>
 
             <div className="about-content-right">
-              {about.paragraphs.map((p, idx) => (
-                <p key={idx} className="about-body-text">
-                  {p}
-                </p>
-              ))}
+              <div className="about-visual-card">
+                <img
+                  src="/images/about-craft.jpg"
+                  alt="Architectural Concrete & Teak Craftsmanship"
+                  className="about-visual-img"
+                  loading="lazy"
+                />
+                <div className="about-visual-overlay" />
+                <div className="about-visual-caption">
+                  <span className="caption-tag">MATERIAL FIDELITY</span>
+                  <span className="caption-desc">Plantation Teak Louvers &amp; Monolithic RCC Frame</span>
+                </div>
+              </div>
             </div>
           </div>
 

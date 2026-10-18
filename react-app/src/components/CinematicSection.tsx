@@ -92,7 +92,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     if (!canvas || !cacheManager) return;
 
     if (!ctxRef.current) {
-      ctxRef.current = canvas.getContext('2d', { alpha: false, desynchronized: true });
+      ctxRef.current = canvas.getContext('2d', { alpha: true });
     }
     const ctx = ctxRef.current;
     if (!ctx) return;
@@ -166,7 +166,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
 
-    ctxRef.current = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    ctxRef.current = canvas.getContext('2d', { alpha: true });
     if (ctxRef.current) {
       ctxRef.current.imageSmoothingEnabled = true;
       ctxRef.current.imageSmoothingQuality = 'high';
@@ -291,14 +291,20 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
   return (
     <section id="cinematic-section" ref={sectionRef}>
       <div id="cinematic-sticky">
+        {/* Full-bleed Architectural Photograph Backdrop */}
+        <div className="cinematic-hero-bg" aria-hidden="true">
+          <img
+            src="/images/hero-residence.jpg"
+            alt="M & M Constructions Signature Residence"
+            className="cinematic-bg-photo"
+            loading="eager"
+          />
+          <div className="cinematic-bg-overlay" />
+        </div>
+
+        {/* Dynamic Canvas Element */}
         <canvas id="cinematic-canvas" ref={canvasRef} />
         <div className="cinematic-vignette" />
-        <div className="cinematic-grid">
-          <div className="grid-corner grid-tl" />
-          <div className="grid-corner grid-tr" />
-          <div className="grid-corner grid-bl" />
-          <div className="grid-corner grid-br" />
-        </div>
         <HeroOverlay isVisible={isHeroVisible} />
         <CinematicHud
           isActive={!isHeroVisible}

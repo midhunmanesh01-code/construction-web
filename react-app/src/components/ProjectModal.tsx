@@ -24,6 +24,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         <button className="modal-close-btn" id="modal-close" onClick={onClose}>
           ✕
         </button>
+        {project.image && (
+          <div className="modal-media-wrap">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="modal-media-img"
+            />
+          </div>
+        )}
         <div id="modal-body">
           <div className="badge">ARCHITECTURAL SPECIFICATION</div>
           <h2

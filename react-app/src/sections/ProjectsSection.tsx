@@ -29,32 +29,44 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
           <div className="projects-grid" id="projects-grid">
             {projects.map((proj) => (
               <div key={proj.id} className="project-card">
-                <div>
+                <div className="project-card-media" onClick={() => onSelectProject(proj)}>
+                  <img
+                    src={proj.image}
+                    alt={proj.title}
+                    className="project-card-img"
+                    loading="lazy"
+                  />
+                  <div className="project-card-img-overlay" />
+                  <div className="project-card-badge">
+                    <span>{proj.year}</span>
+                    <span className="dot">·</span>
+                    <span>{proj.location}</span>
+                  </div>
+                </div>
+
+                <div className="project-card-body">
                   <div className="project-top-meta">
                     <span className="proj-number">PROJECT {proj.number}</span>
-                    <span className="proj-status">
-                      {proj.year} · {proj.location}
-                    </span>
+                    <span className="proj-category-pill">{proj.category}</span>
                   </div>
                   <h3 className="proj-title">{proj.title}</h3>
-                  <div className="proj-category">{proj.category}</div>
                   <p className="proj-overview">{proj.overview}</p>
                   <div className="proj-specs-grid">
-                    {proj.specs.map((sp, sIdx) => (
+                    {proj.specs.slice(0, 2).map((sp, sIdx) => (
                       <div key={sIdx} className="proj-spec-item">
                         <span className="spec-label">{sp.label}</span>
                         <span className="spec-val">{sp.value}</span>
                       </div>
                     ))}
                   </div>
+                  <button
+                    className="proj-btn"
+                    onClick={() => onSelectProject(proj)}
+                  >
+                    <span>VIEW ARCHITECTURAL SPECIFICATION</span>
+                    <span>→</span>
+                  </button>
                 </div>
-                <button
-                  className="proj-btn"
-                  onClick={() => onSelectProject(proj)}
-                >
-                  <span>VIEW ARCHITECTURAL SPECIFICATION</span>
-                  <span>→</span>
-                </button>
               </div>
             ))}
           </div>
