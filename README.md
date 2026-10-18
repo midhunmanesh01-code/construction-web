@@ -24,14 +24,17 @@ At the heart of the experience is an **Ultra-Performance 60 FPS Cinematic Frame 
 
 ## ✨ Key Features
 
-### 🎞️ Ultra-Performance Cinematic Frame Engine
-- **Scroll-Synchronized Scrubbing**: 960 high-resolution cinematic frames rendered via HTML5 Canvas with frame-rate independent exponential damping (`1 - exp(-9 * dt)`).
-- **Asynchronous Worker Queue**: Multithreaded image decoding pipeline using native `createImageBitmap` and `fetch(..., { cache: 'force-cache' })` with worker concurrency limits (up to 8 parallel decodes).
-- **Intelligent LRU Cache**: Dynamic memory management that prioritizes active frames, prunes distant buffers, and retains permanent keyframe grids.
-- **Direction & Velocity Lookahead**: Predictive preloading that accelerates lookahead buffers according to user scroll velocity and direction.
-- **Adaptive Mobile Mode**: Automatically detects mobile viewports, scales frame sampling to 480 frames, caps DPR at 1.5, and optimizes cache sizes for low memory footprints.
+### 🎞️ Dual-Mode Architectural Hero Experience
+- **Desktop 60 FPS Cinematic Canvas**: 960 high-resolution cinematic frames rendered via HTML5 Canvas with frame-rate independent exponential damping (`1 - exp(-9 * dt)`), multithreaded image decoding pipeline (`createImageBitmap`), and predictive LRU preloading.
+- **Dedicated Static Mobile Hero**: Automatically detects mobile viewports (<=768px) and serves a lightweight, high-performance architectural hero banner. Eliminates multi-megabyte frame downloads and artificial 600vh scroll scrubbing on mobile devices, providing instant preloader completion, zero cellular data waste, direct portfolio & inquiry CTAs, and natural scroll momentum.
 
-### 📐 Dynamic Architectural HUD
+### 🧭 Multi-Dismissal Mobile Navigation Drawer & Responsive Header
+- **Accessible Multi-Dismissal**: The mobile drawer can be closed via a dedicated 44px circular close button, the header's animated hamburger-to-cross toggle, tapping the dimmed backdrop, pressing the `Escape` key, or clicking any navigation link.
+- **Background Scroll Locking**: Prevents background body scrolling and touch drag when the mobile menu is active.
+- **Refined Mobile Proportions**: Compact 60px mobile header height, proportional typography (`clamp(1.1rem, 4.2vw, 1.3rem)`), and direct in-drawer action shortcuts for phone calls (`tel:`) and WhatsApp (`wa.me`).
+- **Desktop & Tablet Polish**: Scroll-reactive depth (`.site-header.scrolled`), live active-section highlighting, and responsive gap scaling (`clamp`) preventing navigation collisions on tablet screens (769px–1024px).
+
+### 📐 Dynamic Architectural HUD (Desktop)
 - **5 Progression Stages**:
   - `01 / 05 · EXTERIOR APPROACH` — Monolithic concrete cantilevers, teak louvers, and tropical landscaping.
   - `02 / 05 · THRESHOLD ENTRY` — Architectural portal transition into double-height volume.
@@ -40,13 +43,13 @@ At the heart of the experience is an **Ultra-Performance 60 FPS Cinematic Frame 
   - `05 / 05 · SIGNATURE RESIDENCE` — The finished contemporary residence in complete architectural balance.
 - **Precision HUD Metrics**: Live journey percentage indicator, stage cards, technical corner crosshairs, and vignette framing.
 
-### 💼 Comprehensive Architectural Showcase
-- **Hero Overlay**: Opening statement with geographical coordinates (`09°58'12.4"N 76°17'34.8"E`), elevation datum, and quick navigation.
+### 💼 Comprehensive Architectural Showcase & Mobile Optimization
+- **Hero Telemetry**: Geographical coordinates (`09°58'12.4"N 76°17'34.8"E`), elevation datum, and quick navigation.
 - **About Practice**: Studio ethos and 4 core engineering pillars (*Structural Rigor, Architectural Craft, Climate Responsive, Turnkey Reliability*).
 - **Disciplines & Services**: 6 core disciplines (*Residential Construction, Architectural Execution, Renovation & Retrofitting, Interior Execution, Structural/Civil Works, Project Management*).
-- **Portfolio of Works**: Selected luxury projects (*The Signature Residence, Basalt & Glass Pavilion, The Courtyard Villa, Hillside Cantilever House*) with interactive full-screen specification modal.
+- **Portfolio of Works**: Selected luxury projects (*The Signature Residence, Basalt & Glass Pavilion, The Courtyard Villa, Hillside Cantilever House*) with interactive specification modal and mobile single-column grid (preventing horizontal blowout).
 - **7-Step Build Methodology**: Complete turnkey build roadmap (*Vision → Planning → Foundation → Structure → Architecture → Detail → Completion*).
-- **Direct Consultation & Floating Dock**: Dedicated contact form, office location, direct calling (`tel:`), and instant WhatsApp messaging (`wa.me`).
+- **Direct Consultation & Floating Dock**: Dedicated contact form with 16px mobile inputs (preventing iOS Safari auto-zoom), studio location, direct calling, and instant WhatsApp messaging.
 
 ---
 
@@ -56,7 +59,8 @@ At the heart of the experience is an **Ultra-Performance 60 FPS Cinematic Frame 
 |---|---|---|
 | **Frontend Framework** | [React 18](https://react.dev/) | Declarative component UI and modal lifecycle |
 | **Language** | [TypeScript 5.6](https://www.typescriptlang.org/) | Strict type definitions across all data and frame engine interfaces |
-| **Rendering Engine** | HTML5 Canvas (`CanvasRenderingContext2D`) | High-performance 60 FPS frame playback with `ImageBitmap` decoding |
+| **Rendering Engine** | HTML5 Canvas (`CanvasRenderingContext2D`) | High-performance 60 FPS frame playback with `ImageBitmap` decoding (Desktop) |
+| **Mobile Architecture** | CSS Grid & Flexbox | Zero-overhead, instant-loading static architectural presentation (Mobile) |
 | **Build Tooling** | [Vite 6](https://vitejs.dev/) | Lightning-fast HMR and optimized production bundling |
 | **Styling** | Modern CSS Variables | Zero-runtime CSS design system with custom grid, layout, and dark theme |
 | **Typography** | Google Fonts | *Syne*, *Space Grotesk*, *Plus Jakarta Sans*, and *JetBrains Mono* |
@@ -73,14 +77,15 @@ construction-web/
 │   │   └── favicon.svg              # Studio monogram favicon SVG
 │   ├── src/
 │   │   ├── components/              # Interactive UI components
-│   │   │   ├── CinematicHud.tsx     # 5-stage progress HUD and live indicator
+│   │   │   ├── CinematicHud.tsx     # 5-stage progress HUD and live indicator (Desktop)
 │   │   │   ├── CinematicSection.tsx # Sticky scroll viewport and canvas render loop
 │   │   │   ├── FloatingActions.tsx  # Quick WhatsApp & Call floating action dock
-│   │   │   ├── HeroOverlay.tsx      # Opening headline and studio coordinates
-│   │   │   ├── MobileDrawer.tsx     # Mobile slide-out navigation menu
+│   │   │   ├── HeroOverlay.tsx      # Opening headline and studio coordinates (Desktop)
+│   │   │   ├── MobileDrawer.tsx     # Accessible mobile slide-out navigation menu
+│   │   │   ├── MobileHero.tsx       # Instant-loading static architectural hero (Mobile)
 │   │   │   ├── Preloader.tsx        # Initial architectural loader with counter
 │   │   │   ├── ProjectModal.tsx     # Fullscreen project specification viewer
-│   │   │   └── SiteHeader.tsx       # Sticky site navigation header
+│   │   │   └── SiteHeader.tsx       # Sticky site navigation header with active section tracking
 │   │   ├── data/
 │   │   │   └── content.ts           # Central business data (brand, services, projects, process, contact)
 │   │   ├── lib/

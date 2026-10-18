@@ -49,7 +49,10 @@ export const App: React.FC = () => {
       <Preloader progress={preloaderProgress} isLoaded={isPreloaderLoaded} />
 
       {/* Floating Navigation Header */}
-      <SiteHeader onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
+      <SiteHeader
+        isMobileMenuOpen={isMobileMenuOpen}
+        onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+      />
 
       {/* Mobile Navigation Drawer */}
       <MobileDrawer
