@@ -73,8 +73,7 @@ At the heart of the experience is an **Ultra-Performance 60 FPS Cinematic Frame 
 construction-web/
 ├── react-app/
 │   ├── public/
-│   │   ├── images/                  # High-resolution architectural photography (hero, about, project portfolio)
-│   │   ├── frames/                  # High-resolution sequential JPG frames (frame-0001.jpg .. frame-0960.jpg)
+│   │   ├── images/                  # High-resolution architectural photography (about, project portfolio)
 │   │   └── favicon.svg              # Studio monogram favicon SVG
 │   ├── src/
 │   │   ├── components/              # Interactive UI components
@@ -172,15 +171,18 @@ Key sections you can modify:
 - **`process`**: 7-stage construction workflow and deliverables.
 - **`contact`**: Phone numbers, WhatsApp contact, email, address, and studio hours.
 
-### 2. Custom Frame CDN / Hosting (Optional)
-If you host your 960-frame sequence on a separate CDN or S3 bucket, configure the following environment variables in a `.env` file in `react-app/`:
+### 2. Cinematic Frames CDN & Repository
+The 960-frame sequence is hosted in the dedicated repository:
+👉 [**midhunmanesh01-code/mm-constructions-frames**](https://github.com/midhunmanesh01-code/mm-constructions-frames)
+
+By default, the application streams frames on desktop via jsDelivr CDN directly from this repository without requiring heavy asset storage in the main web repo:
+`https://cdn.jsdelivr.net/gh/midhunmanesh01-code/mm-constructions-frames@main/frames`
+
+To point to a custom CDN or S3 bucket, set `VITE_FRAME_BASE_URL` in `react-app/.env`:
 
 ```env
-# URL for desktop frames (defaults to /frames/frame-XXXX.jpg)
+# Optional custom CDN override
 VITE_FRAME_BASE_URL=https://cdn.yourdomain.com/frames
-
-# Optional dedicated mobile frame sequence URL
-VITE_MOBILE_FRAME_BASE_URL=https://cdn.yourdomain.com/frames-mobile
 ```
 
 ---
